@@ -1,7 +1,7 @@
 import { ObjectId } from "mongodb";
 import DocCollection, { BaseDoc } from "../framework/doc";
 import { AccessLevel } from "../framework/types";
-import { NotFoundError } from "./errors";
+import { NotAllowedError, NotFoundError } from "./errors";
 
 export interface AccessDoc extends BaseDoc {
   user: ObjectId;
@@ -12,7 +12,7 @@ export default class AccessListConcept {
   public readonly accessList = new DocCollection<AccessDoc>("access-list");
 
   // Retrieves the access level of `user`.
-  async getAccess(user: ObjectId) {
+  async getUserAccess(user: ObjectId) {
     const access = await this.accessList.readOne({ user });
     if (access) {
       return access.accessLevel;
@@ -20,19 +20,23 @@ export default class AccessListConcept {
     throw new NotFoundError(`Cannot find user ${user} in the access list.`);
   }
 
-  // Update the access level of `user` to `newAccess`.
-  async updateUserAccess(user: ObjectId, newAccess: AccessLevel) {
-    const accessUpdate = {
-      user,
-      accessLevel: newAccess,
-    };
-    await this.accessList.updateOne({ user }, accessUpdate);
-    return { msg: `${user}'s access level successfully changed to ${newAccess}!` };
-  }
-
   // Gives access level `accessLevel` to user `user`.
-  async giveAccess(user: ObjectId, accessLevel: AccessLevel) {
+  async setUserAccess(user: ObjectId, accessLevel: AccessLevel) {
+    const currentAccess = await this.accessList.readOne({ user });
+    // If an access entry already exists, update it. Otherwise, create one.
+    if (currentAccess) {
+      const accessUpdate = { user, accessLevel };
+      await this.accessList.updateOne({ user }, accessUpdate);
+    }
     await this.accessList.createOne({ user, accessLevel });
     return { msg: `${user} successfully given ${accessLevel} access!` };
+  }
+
+  // Verify that the user's access is at least `accessLevel`.
+  async verifyAccess(user: ObjectId, accessLevel: AccessLevel) {
+    const userAccess = await this.getUserAccess(user);
+    if (userAccess < accessLevel) {
+      throw new NotAllowedError(`User doesn't have ${accessLevel} access!`);
+    }
   }
 }

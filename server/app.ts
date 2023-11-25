@@ -1,4 +1,5 @@
 import AccessListConcept from "./concepts/accessList";
+import MaterialConcept from "./concepts/material";
 import UserConcept from "./concepts/user";
 import UserSettingsConcept from "./concepts/userSettings";
 import WebSessionConcept from "./concepts/websession";
@@ -8,3 +9,4 @@ export const WebSession = new WebSessionConcept();
 export const User = new UserConcept();
 export const AccessList = new AccessListConcept();
 export const UserSettings = new UserSettingsConcept();
+export const Material = new MaterialConcept();
