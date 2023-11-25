@@ -1,12 +1,7 @@
 import { ObjectId } from "mongodb";
 import DocCollection, { BaseDoc } from "../framework/doc";
+import { AccessLevel } from "../framework/types";
 import { NotFoundError } from "./errors";
-
-export enum AccessLevel {
-  Admin,
-  Organization,
-  None,
-}
 
 export interface AccessDoc extends BaseDoc {
   user: ObjectId;
