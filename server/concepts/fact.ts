@@ -22,8 +22,11 @@ export default class FactConcept {
     throw new NotFoundError(`Fact does not exist!`);
   }
 
-  async getRandomFact(_id: ObjectId) {
+  async getRandomFact() {
     const fact_list = await this.getFactsByQuery({});
+    if (fact_list.length == 0) {
+      throw new NotFoundError(`Fact database is currently empty!`);
+    }
     const rand_index = Math.floor(Math.random() * fact_list.length);
     return fact_list[rand_index];
   }
