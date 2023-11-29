@@ -2,7 +2,7 @@
 import { useUserStore } from "@/stores/user";
 import { fetchy } from "@/utils/fetchy";
 import { storeToRefs } from "pinia";
-import { onBeforeMount, ref } from "vue";
+import { computed, onBeforeMount, ref } from "vue";
 
 const { isLoggedIn } = storeToRefs(useUserStore());
 const props = defineProps(["materialName"]);
@@ -10,8 +10,17 @@ const props = defineProps(["materialName"]);
 const loaded = ref(false);
 const material = ref<Record<string, string>>()
 
-const materialTypeToIcons: Record<string, string> = {"Recyclable": "recyclableIcon.png", "Compostable": "compostableIcon.png", "Solid Waste": "solidWasteIcon.png", "Donatable": "donatableIcon.png"}
-const materialType = material.value ? materialTypeToIcons[material.value.type] : undefined
+const materialTypeToIcons: Record<string, string> = {
+    "Recyclable": "https://drive.google.com/uc?export=view&id=1BDzsYV6XROQxAQhHyCi72uixk8ietOeO", 
+    "Compostable": "https://drive.google.com/uc?export=view&id=16l0EGuq7o6kVnQI2Shg2E7uzS9qBcq9r", 
+    "Solid Waste": "https://drive.google.com/uc?export=view&id=1GBbZz3UqTaXe7hVaHK3N7XHXT2QPIjSK", 
+    "Donatable": "https://drive.google.com/uc?export=view&id=1WtU-kZvBET_hvcW3fNhHpm5A9MvfRou3"
+}
+
+const materialType = computed(() => {
+  return material.value ? materialTypeToIcons[material.value.type] : undefined
+})
+
 
 // expects material name for input
 async function getMaterial(name: string) {
@@ -38,21 +47,14 @@ onBeforeMount(async () => {
     <!-- TODO: image and recylce type icon -->
     <section v-if="material && loaded">
         <h2>{{ material.name }}</h2>
-        <!-- <img src={{ materialType }}/> -->
+        <img v-bind:src="materialType" alt="type unknown"/>
         <button>See Disposal Locations</button>   <!-- TODO: route to disposal locations map -->
         <p> {{ material.description }}</p>
-        <!-- <img src={{ material.image }}/> -->
+        <img v-bind:src="material.image" alt="no material image"/>
 
         <!-- Log Recycle button -->
         <section v-if="isLoggedIn">
             <button>Log Recycle</button>    <!-- TODO: add functionality lmao -->
-        </section>
-
-        <!-- Similar Items -->
-        <section>
-            <h3>Similar Items</h3>
-            <button>See More</button>   <!-- TODO: route to search page?? -->
-            <!-- TODO: <ItemPreviewComponent> -->
         </section>
     </section>
 
