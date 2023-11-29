@@ -6,7 +6,7 @@ export interface FactDoc extends BaseDoc {
   fact: string;
 }
 
-export default class MaterialConcept {
+export default class FactConcept {
   public readonly facts = new DocCollection<FactDoc>("facts");
 
   async getFactsByQuery(query: Filter<FactDoc>) {
@@ -24,7 +24,7 @@ export default class MaterialConcept {
 
   async getRandomFact(_id: ObjectId) {
     const fact_list = await this.getFactsByQuery({});
-    const rand_index = Math.floor(Math.random() * fact_list.length)
+    const rand_index = Math.floor(Math.random() * fact_list.length);
     return fact_list[rand_index];
   }
 
