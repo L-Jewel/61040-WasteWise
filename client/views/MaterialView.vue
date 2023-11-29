@@ -5,7 +5,7 @@ import { storeToRefs } from "pinia";
 
 const { currentUsername, isLoggedIn } = storeToRefs(useUserStore());
 
-const material = 'Plastic4';    // TODO: fix hard code for now
+const material = 'Plastic 4';    // TODO: fix hard code for now
 </script>
 
 <template>

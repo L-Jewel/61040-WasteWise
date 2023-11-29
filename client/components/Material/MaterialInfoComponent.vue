@@ -36,6 +36,17 @@ async function getMaterial(name: string) {
     material.value = materialResult;
 }
 
+// call this in onBeforeMount to create a new material manually without having to use mongodb
+async function createMaterial(name: string, image: string, description: string, ric: string, type: string) {
+    try {
+        await fetchy("/api/materials", "POST", {
+        body: { name: name, image: image, description: description, ric: ric, type:type },
+        });
+  } catch (_) {
+        return;
+  }
+}
+
 onBeforeMount(async () => {
     await getMaterial(props.materialName);
     loaded.value = true;
@@ -49,11 +60,12 @@ onBeforeMount(async () => {
         <h2>{{ material.name }}</h2>
         <img v-bind:src="materialType" alt="type unknown"/>
         <button>See Disposal Locations</button>   <!-- TODO: route to disposal locations map -->
+        <p v-if="material.ric"> RIC: {{ material.ric }}</p>
         <p> {{ material.description }}</p>
         <img v-bind:src="material.image" alt="no material image"/>
 
         <!-- Log Recycle button -->
-        <section v-if="isLoggedIn">
+        <section v-if="isLoggedIn && (material.type == 'Recyclable' || material.type == 'Compostable')">
             <button>Log Recycle</button>    <!-- TODO: add functionality lmao -->
         </section>
     </section>
