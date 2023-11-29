@@ -96,11 +96,11 @@ class Routes {
   // Search Materials
   @Router.get("/search/material/:query")
   async queryMaterialsByName(query: string) {
-    return Material.getMaterialsByQuery({ name: { $regex: `\\w*${query}\\w*` } });
+    return Material.getMaterialsByQuery({ name: { $regex: `\w*${query}\w*` } });
   }
   @Router.get("/search/ric/:query")
   async queryMaterialsByRIC(query: string) {
-    return Material.getMaterialsByQuery({ ric: { $regex: `\\w*${query}\\w*` } });
+    return Material.getMaterialsByQuery({ ric: { $regex: `\w*${query}\w*` } });
   }
 }
 
