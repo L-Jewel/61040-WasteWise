@@ -53,7 +53,7 @@ onBeforeMount(async () => {
   <ul v-if="isMenuClicked" class="menu">
     <!-- Make all list items RouterLinks -->
     <li><RouterLink :to="{ name: 'Home' }" :class="{ underline: currentRouteName == 'Home' }"> Home </RouterLink></li>
-    <li v-if="isLoggedIn">Dashboard</li>
+    <li v-if="isLoggedIn"><RouterLink :to="{ name: 'Dashboard' }" :class="{ underline: currentRouteName == 'Dashboard' }"> Dashboard </RouterLink></li>
     <li>Search</li>
     <li>Map</li>
     <li v-if="isLoggedIn">Leaderboard</li>
