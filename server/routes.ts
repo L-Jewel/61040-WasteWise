@@ -1,7 +1,7 @@
 import { Router, getExpressRouter } from "./framework/router";
 
 import { ObjectId } from "mongodb";
-import { AccessList, Material, User, WebSession } from "./app";
+import { AccessList, Fact, Material, User, WebSession } from "./app";
 import { MaterialDoc } from "./concepts/material";
 import { UserDoc } from "./concepts/user";
 import { WebSessionDoc } from "./concepts/websession";
@@ -65,6 +65,13 @@ class Routes {
     // Give access.
     const user = await User.getUserByUsername(username);
     return await AccessList.setUserAccess(user._id, accessLevel);
+  }
+
+  // FACT
+
+  @Router.get("/fact")
+  async getRandomFact() {
+    return await Fact.getRandomFact();
   }
 
   // MATERIAL
