@@ -118,6 +118,7 @@ button {
   display: flex;
   flex-direction: column;
   width: 15em;
+  background-color: var(--base-bg);
 }
 
 .menu a,
