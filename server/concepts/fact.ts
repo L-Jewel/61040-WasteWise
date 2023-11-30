@@ -23,6 +23,10 @@ export default class FactConcept {
   }
 
   async getRandomFact() {
+    const facts_list = ["Glass is 100% recyclable and can be recycled endlessly without loss in quality or purity"];
+    for (const text of facts_list) {
+      await this.facts.createOne({ fact: text });
+    }
     const fact_list = await this.getFactsByQuery({});
     if (fact_list.length == 0) {
       throw new NotFoundError(`Fact database is currently empty!`);

@@ -35,7 +35,7 @@ onBeforeMount(async () => {
       <p class="fact-title">Daily Fact</p>
       <!-- Change to use fact from update -->
       <p class="fact" v-if="fact && loaded">{{ fact.value }}</p>
-      <p class="fact" v-else>Loading fact...</p>
+      <p class="fact" v-else>Loading fact...test</p>
       <p class="fact">Glass is 100% recyclable and can be recycled endlessly without loss in quality or purity</p>
     </div>
   </section>
