@@ -34,8 +34,8 @@ onBeforeMount(async () => {
     <div class="fact-content">
       <p class="fact-title">Daily Fact</p>
       <!-- Change to use fact from update -->
-      <p class="fact" v-if="fact && loaded">{{ fact.value }}</p>
-      <p class="fact" v-else>Loading fact...test</p>
+      <p class="fact" v-if="fact && loaded">{{ fact.fact }}</p>
+      <p class="fact" v-else>Loading fact...</p>
     </div>
   </section>
 </template>

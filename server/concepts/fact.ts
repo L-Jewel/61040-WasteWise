@@ -28,7 +28,7 @@ export default class FactConcept {
       throw new NotFoundError(`Fact database is currently empty!`);
     }
     const rand_index = Math.floor(Math.random() * fact_list.length);
-    return fact_list[rand_index].fact;
+    return fact_list[rand_index];
   }
 
   //async createFact(fact: string) {
