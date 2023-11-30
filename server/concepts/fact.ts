@@ -23,9 +23,23 @@ export default class FactConcept {
   }
 
   async getRandomFact() {
-    const facts_list = ["Glass is 100% recyclable and can be recycled endlessly without loss in quality or purity"];
+    const facts_list = [
+      "Every year we dump a massive 2.12 billion tons of waste",
+      "The recycling rate for cardboard in the U.S. reached a record high of nearly 97% in 2019",
+      "One ton of recycled cardboard saves 46 gallons of oil",
+      "About 30% of food in American grocery stores is thrown away",
+      "The value of the amount of food waste in the U.S. is estimated at more than $161 billion every year",
+      "2.5 million plastic bottles are thrown away every hour in America",
+      "Recycling plastic takes 88% less energy than making it from raw materials",
+      "Enough plastic is thrown away each year to circle the earth four times",
+      "Americans use 85 million tons of paper per year which is about 680 pounds per person",
+    ];
     for (const text of facts_list) {
-      await this.facts.createOne({ fact: text });
+      if (await this.facts.readOne({ fact: text })) {
+        //
+      } else {
+        await this.facts.createOne({ fact: text });
+      }
     }
     const fact_list = await this.getFactsByQuery({});
     if (fact_list.length == 0) {
