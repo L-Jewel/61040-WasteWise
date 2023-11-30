@@ -103,7 +103,6 @@ class Routes {
   // Search Materials
   @Router.get("/search/material/:input")
   async queryMaterialsByName(input: string) {
-    console.log(input);
     return Material.getMaterialsByQuery({ name: { $regex: `(?i)\\w*${input}\\w*` } });
   }
   @Router.get("/search/ric/:input")
