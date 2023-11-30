@@ -54,7 +54,7 @@ onBeforeMount(async () => {
     <!-- Make all list items RouterLinks -->
     <li><RouterLink :to="{ name: 'Home' }" :class="{ underline: currentRouteName == 'Home' }"> Home </RouterLink></li>
     <li v-if="isLoggedIn"><RouterLink :to="{ name: 'Dashboard' }" :class="{ underline: currentRouteName == 'Dashboard' }"> Dashboard </RouterLink></li>
-    <li>Search</li>
+    <li><RouterLink :to="{ name: 'Search' }" :class="{ underline: currentRouteName == 'Search' }"> Search </RouterLink></li>
     <li>Map</li>
     <li v-if="isLoggedIn">Leaderboard</li>
     <li v-if="isLoggedIn"><RouterLink :to="{ name: 'Settings' }" :class="{ underline: currentRouteName == 'Settings' }"> Settings </RouterLink></li>

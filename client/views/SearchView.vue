@@ -1,15 +1,22 @@
 <script setup lang="ts">
 import { ref } from "vue";
+import MaterialCardSection from "../components/Material/MaterialCardSection.vue";
 import { fetchy } from "../utils/fetchy";
 
 const isLoadingSearch = ref(false);
 const searchQuery = ref("");
+const searchResults = ref<Array<Record<string, string>>>([]);
 
 async function searchByMaterial() {
+  // Clear out the search results.
+  searchResults.value = [];
+  // If there's an empty query, don't bother fetching.
+  if (searchQuery.value === "") return;
+  // Otherwise, attempt to query the backend for materials.
   isLoadingSearch.value = true;
   try {
-    const searchResults = await fetchy(`/api/search/material/${searchQuery.value}`, "GET");
-    console.log(searchResults);
+    searchResults.value = await fetchy(`/api/search/material/${searchQuery.value}`, "GET");
+    console.log(searchResults.value);
   } catch {
     return;
   }
@@ -25,6 +32,7 @@ async function searchByMaterial() {
         <v-btn type="submit" variant="tonal" size="x-large" :loading="isLoadingSearch">Search</v-btn>
       </fieldset>
     </form>
+    <MaterialCardSection :materialList="searchResults" :key="searchResults.length" />
   </main>
 </template>
 
@@ -34,6 +42,7 @@ main {
   flex-direction: column;
   align-items: stretch;
   padding: 2rem 15%;
+  gap: 1rem;
 }
 
 form > fieldset {
