@@ -1,4 +1,31 @@
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import { useUserStore } from "@/stores/user";
+import { fetchy } from "@/utils/fetchy";
+import { storeToRefs } from "pinia";
+import { ref } from "vue";
+
+const { isLoggedIn } = storeToRefs(useUserStore());
+const props = defineProps(["materialName"]);
+
+const loaded = ref(false);
+const fact = ref<Record<string, string>>();
+
+async function getFact() {
+  let factResult;
+  try {
+    factResult = await fetchy(`/api/fact`, "GET", {});
+  } catch (_) {
+    return;
+  }
+
+  fact.value = factResult;
+}
+
+onBeforeMount(async () => {
+  await getFact();
+  loaded.value = true;
+});
+</script>
 
 <template>
   <section>
@@ -7,6 +34,8 @@
     <div class="fact-content">
       <p class="fact-title">Daily Fact</p>
       <!-- Change to use fact from update -->
+      <p class="fact" v-if="fact && loaded">{{ fact.value }}</p>
+      <p class="fact" v-else>Loading fact...</p>
       <p class="fact">Glass is 100% recyclable and can be recycled endlessly without loss in quality or purity</p>
     </div>
   </section>
