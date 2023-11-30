@@ -1,11 +1,6 @@
 <script setup lang="ts">
-import { useUserStore } from "@/stores/user";
 import { fetchy } from "@/utils/fetchy";
-import { storeToRefs } from "pinia";
 import { onBeforeMount, ref } from "vue";
-
-const { isLoggedIn } = storeToRefs(useUserStore());
-const props = defineProps(["materialName"]);
 
 const loaded = ref(false);
 const fact = ref<Record<string, string>>();
@@ -29,11 +24,9 @@ onBeforeMount(async () => {
 
 <template>
   <section>
-    <!-- Add light bulb image -->
     <img src="/client/assets/images/lightbulb.svg" />
     <div class="fact-content">
       <p class="fact-title">Daily Fact</p>
-      <!-- Change to use fact from update -->
       <p class="fact" v-if="fact && loaded">{{ fact.fact }}</p>
       <p class="fact" v-else>Loading fact...</p>
     </div>
