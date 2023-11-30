@@ -2,7 +2,7 @@
 import { useToastStore } from "@/stores/toast";
 import { useUserStore } from "@/stores/user";
 import { storeToRefs } from "pinia";
-import { computed, onBeforeMount } from "vue";
+import { computed, onBeforeMount, ref } from "vue";
 import { RouterLink, RouterView, useRoute } from "vue-router";
 
 const currentRoute = useRoute();
@@ -10,6 +10,7 @@ const currentRouteName = computed(() => currentRoute.name);
 const userStore = useUserStore();
 const { isLoggedIn } = storeToRefs(userStore);
 const { toast } = storeToRefs(useToastStore());
+const isMenuClicked = ref(false);
 
 // Make sure to update the session before mounting the app in case the user is already logged in
 onBeforeMount(async () => {
@@ -24,13 +25,16 @@ onBeforeMount(async () => {
 <template>
   <header>
     <nav>
+      <button v-on:click="isMenuClicked = !isMenuClicked">
+        <img src="/client/assets/images/menu.svg" />
+      </button>
       <div class="title">
         <img src="@/assets/images/logo.svg" />
         <RouterLink :to="{ name: 'Home' }">
-          <h1>Social Media App</h1>
+          <h1>WasteWise</h1>
         </RouterLink>
       </div>
-      <ul>
+      <ul class="navigation-list">
         <li>
           <RouterLink :to="{ name: 'Home' }" :class="{ underline: currentRouteName == 'Home' }"> Home </RouterLink>
         </li>
@@ -46,6 +50,15 @@ onBeforeMount(async () => {
       <p>{{ toast.message }}</p>
     </article>
   </header>
+  <ul v-if="isMenuClicked" class="menu">
+    <!-- Make all list items RouterLinks -->
+    <li><RouterLink :to="{ name: 'Home' }" :class="{ underline: currentRouteName == 'Home' }"> Home </RouterLink></li>
+    <li v-if="isLoggedIn">Dashboard</li>
+    <li>Search</li>
+    <li>Map</li>
+    <li v-if="isLoggedIn">Leaderboard</li>
+    <li v-if="isLoggedIn"><RouterLink :to="{ name: 'Settings' }" :class="{ underline: currentRouteName == 'Settings' }"> Settings </RouterLink></li>
+  </ul>
   <RouterView />
 </template>
 
@@ -57,6 +70,7 @@ nav {
   background-color: lightgray;
   display: flex;
   align-items: center;
+  gap: 1em;
 }
 
 h1 {
@@ -80,7 +94,7 @@ a {
   text-decoration: none;
 }
 
-ul {
+.navigation-list {
   list-style-type: none;
   margin-left: auto;
   display: flex;
@@ -91,5 +105,34 @@ ul {
 
 .underline {
   text-decoration: underline;
+}
+
+button {
+  height: 2em;
+  width: 2em;
+}
+
+.menu {
+  position: fixed;
+  list-style-type: none;
+  display: flex;
+  flex-direction: column;
+  width: 15em;
+}
+
+.menu a,
+.menu > li {
+  /* Remove li selector after changing all nav items to RouterLinks (a)*/
+  font-weight: bold;
+  padding: 0.67em;
+  font-size: larger;
+}
+
+.menu a {
+  padding: 0;
+}
+
+.menu > li:hover {
+  background-color: paleturquoise;
 }
 </style>
