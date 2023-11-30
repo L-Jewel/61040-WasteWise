@@ -6,6 +6,7 @@ import HomeView from "../views/HomeView.vue";
 import LoginView from "../views/LoginView.vue";
 import MaterialView from "../views/MaterialView.vue";
 import NotFoundView from "../views/NotFoundView.vue";
+import SearchView from "../views/SearchView.vue";
 import SettingView from "../views/SettingView.vue";
 
 const router = createRouter({
@@ -38,6 +39,11 @@ const router = createRouter({
       path: "/material",
       name: "Material",
       component: MaterialView,
+    },
+    {
+      path: "/search",
+      name: "Search",
+      component: SearchView,
     },
     {
       path: "/:catchAll(.*)",
