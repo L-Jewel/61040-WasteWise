@@ -5,12 +5,15 @@ import { storeToRefs } from "pinia";
 
 const { currentUsername, isLoggedIn } = storeToRefs(useUserStore());
 
-const material = 'Plastic 4';    // TODO: fix hard code for now
+
+const props = defineProps(['materialName']);
+
+// const material = $route.params.material;    // TODO: fix hard code for now
 </script>
 
 <template>
     <main>
-        <MaterialInfoComponent :materialName="material" />
+        <MaterialInfoComponent :materialName="props.materialName" />
     </main>
 </template>
 

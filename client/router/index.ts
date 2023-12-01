@@ -42,9 +42,10 @@ const router = createRouter({
       },
     },
     {
-      path: "/material",
+      path: "/material/:materialName",
       name: "Material",
       component: MaterialView,
+      props: true,
     },
     {
       path: "/search",
