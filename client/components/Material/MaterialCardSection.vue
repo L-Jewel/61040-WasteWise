@@ -17,9 +17,6 @@ function materialCardClicked(card: string) {
     <article v-if="materialList.length>0" v-for="material in materialList" :key="material._id">
       <MaterialCard :material="material" v-on:click="materialCardClicked(material.name)"/>
     </article>
-    <article v-else>
-      No information found for this item :(
-    </article>
   </section>
 </template>
 

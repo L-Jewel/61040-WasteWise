@@ -6,6 +6,7 @@ import { fetchy } from "../utils/fetchy";
 const isLoadingSearch = ref(false);
 const searchQuery = ref("");
 const searchResults = ref<Array<Record<string, string>>>([]);
+const emptyResults = ref(false)
 
 async function searchByMaterial() {
   // Clear out the search results.
@@ -14,12 +15,18 @@ async function searchByMaterial() {
   if (searchQuery.value === "") return;
   // Otherwise, attempt to query the backend for materials.
   isLoadingSearch.value = true;
+  emptyResults.value = false;
+  
   try {
     searchResults.value = await fetchy(`/api/search/material/${searchQuery.value}`, "GET");
     console.log(searchResults.value);
   } catch {
     return;
   }
+  if (searchResults.value.length == 0) {
+    emptyResults.value = true;
+  }
+
   isLoadingSearch.value = false;
 }
 </script>
@@ -33,6 +40,9 @@ async function searchByMaterial() {
       </fieldset>
     </form>
     <MaterialCardSection :materialList="searchResults" :key="searchResults.length" />
+    <article v-if="emptyResults">
+      No information found for this item :()
+    </article>
   </main>
 </template>
 
