@@ -1,21 +1,15 @@
 <script setup lang="ts">
 import { ref } from "vue";
-import router from "../../router";
 import MaterialCard from "./MaterialCard.vue";
 
 const props = defineProps(["materialList"]);
 const materialList = ref<Array<Record<string, string>>>(props.materialList);
-
-function materialCardClicked(card: string) {
-  console.log(card)
-  void router.push({ path: `Material/${card}` });
-}
 </script>
 
 <template>
   <section>
-    <article v-if="materialList.length>0" v-for="material in materialList" :key="material._id">
-      <MaterialCard :material="material" v-on:click="materialCardClicked(material.name)"/>
+    <article v-for="material in materialList" :key="material._id">
+      <MaterialCard :material="material" />
     </article>
   </section>
 </template>
