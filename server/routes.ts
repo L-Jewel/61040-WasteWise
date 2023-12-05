@@ -1,8 +1,9 @@
 import { Router, getExpressRouter } from "./framework/router";
 
 import { ObjectId } from "mongodb";
-import { AccessList, Bin, Fact, Material, User, WebSession } from "./app";
+import { AccessList, Bin, Fact, Map, Material, User, WebSession } from "./app";
 import { BinDoc } from "./concepts/bin";
+import { BadValuesError } from "./concepts/errors";
 import { MaterialDoc } from "./concepts/material";
 import { UserDoc } from "./concepts/user";
 import { WebSessionDoc } from "./concepts/websession";
@@ -111,13 +112,18 @@ class Routes {
   }
 
   // BIN
-  @Router.get("/bins")
-  async addBin(session: WebSessionDoc, type: BinType, acceptedMaterials: ObjectId[], misdisposedMaterials: ObjectId[]) {
+  @Router.post("/bins")
+  async addBin(session: WebSessionDoc, type: BinType, acceptedMaterials: ObjectId[], misdisposedMaterials: ObjectId[], location: [number, number]) {
     // Verify that the user signed in is an Organization
     const user = await WebSession.getUser(session);
     await AccessList.verifyAccess(user, AccessLevel.Organization);
 
-    return await Bin.addBin(type, acceptedMaterials, misdisposedMaterials);
+    const bin = await Bin.addBin(type, acceptedMaterials, misdisposedMaterials);
+    if (bin.bin) {
+      return await Map.addBin(bin.bin?._id, location);
+    } else {
+      throw new BadValuesError("Bin could not be created");
+    }
   }
   @Router.patch("/bins/:_id")
   async updateBin(session: WebSessionDoc, _id: ObjectId, update: Partial<BinDoc>) {
@@ -133,7 +139,8 @@ class Routes {
     const user = await WebSession.getUser(session);
     await AccessList.verifyAccess(user, AccessLevel.Organization);
 
-    return await Bin.removeBin(_id);
+    await Bin.removeBin(_id);
+    return await Map.removeBin(_id);
   }
   @Router.post("/bins/:_id")
   async reportBinStatus(session: WebSessionDoc, _id: ObjectId, status: BinStatus) {
@@ -154,6 +161,23 @@ class Routes {
   @Router.get("/search/bins/material/:input")
   async searchBinsByMaterial(input: ObjectId) {
     return await Bin.getBinsByQuery({ acceptedMaterials: { $in: [input] } });
+  }
+
+  // MAP
+  @Router.get("/map")
+  async getBinsByLocation(location: [number, number]) {
+    return await Map.getBinsByLocation(location);
+  }
+  @Router.get("/map/:_id")
+  async getBinLocation(_id: ObjectId) {
+    return await Map.getBinLocation(_id);
+  }
+  @Router.patch("/map/:_id")
+  async updateBinLocation(session: WebSessionDoc, _id: ObjectId, location: [number, number]) {
+    const user = WebSession.getUser(session);
+    await AccessList.verifyAccess(user, AccessLevel.Organization);
+
+    return await Map.updateBinLocation(_id, location);
   }
 }
 

@@ -36,6 +36,13 @@ export default class DocCollection<Schema extends BaseDoc> {
       throw new Error(`Collection '${name}' already exists!`);
     }
     this.collection = db.collection(name);
+
+    // Create a new 2dsphere index for the location field in the mapdoc so that the near operation can be used.
+    // If the location field name or doc name is changed, it should also be changed here.
+    // https://www.mongodb.com/docs/manual/reference/operator/query/near/
+    if (name == "map") {
+      this.collection.createIndex({ location: "2d" });
+    }
   }
 
   /**
