@@ -1,4 +1,5 @@
 import AccessListConcept from "./concepts/accessList";
+import BinConcept from "./concepts/bin";
 import FactConcept from "./concepts/fact";
 import MaterialConcept from "./concepts/material";
 import UserConcept from "./concepts/user";
@@ -12,3 +13,4 @@ export const AccessList = new AccessListConcept();
 export const UserSettings = new UserSettingsConcept();
 export const Material = new MaterialConcept();
 export const Fact = new FactConcept();
+export const Bin = new BinConcept();

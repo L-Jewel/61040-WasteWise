@@ -1,11 +1,12 @@
 import { Router, getExpressRouter } from "./framework/router";
 
 import { ObjectId } from "mongodb";
-import { AccessList, Fact, Material, User, WebSession } from "./app";
+import { AccessList, Bin, Fact, Material, User, WebSession } from "./app";
+import { BinDoc } from "./concepts/bin";
 import { MaterialDoc } from "./concepts/material";
 import { UserDoc } from "./concepts/user";
 import { WebSessionDoc } from "./concepts/websession";
-import { AccessLevel, MaterialType } from "./framework/types";
+import { AccessLevel, BinStatus, BinType, MaterialType } from "./framework/types";
 
 class Routes {
   // SESSION
@@ -68,7 +69,6 @@ class Routes {
   }
 
   // FACT
-
   @Router.get("/fact")
   async getRandomFact() {
     return await Fact.getRandomFact();
@@ -78,7 +78,7 @@ class Routes {
   @Router.post("/materials")
   async createMaterial(session: WebSessionDoc, name: string, image: string, description: string, ric: string, type: MaterialType) {
     // Verify that the user signed in is an Admin.
-    // await AccessList.verifyAccess(await WebSession.getUser(session), AccessLevel.Admin);
+    await AccessList.verifyAccess(await WebSession.getUser(session), AccessLevel.Admin);
     // Create material.
     return await Material.createMaterial(name, image, description, ric, type);
   }
@@ -108,6 +108,52 @@ class Routes {
   @Router.get("/search/ric/:input")
   async queryMaterialsByRIC(input: string) {
     return Material.getMaterialsByQuery({ ric: { $regex: `(?i)\\w*${input}\\w*` } });
+  }
+
+  // BIN
+  @Router.get("/bins")
+  async addBin(session: WebSessionDoc, type: BinType, acceptedMaterials: ObjectId[], misdisposedMaterials: ObjectId[]) {
+    // Verify that the user signed in is an Organization
+    const user = await WebSession.getUser(session);
+    await AccessList.verifyAccess(user, AccessLevel.Organization);
+
+    return await Bin.addBin(type, acceptedMaterials, misdisposedMaterials);
+  }
+  @Router.patch("/bins/:_id")
+  async updateBin(session: WebSessionDoc, _id: ObjectId, update: Partial<BinDoc>) {
+    // Verify that the user signed in is an Organization
+    const user = await WebSession.getUser(session);
+    await AccessList.verifyAccess(user, AccessLevel.Organization);
+
+    return await Bin.updateBin(_id, update);
+  }
+  @Router.delete("/bins/:_id")
+  async deleteBin(session: WebSessionDoc, _id: ObjectId) {
+    // Verify that the user signed in is an Organization
+    const user = await WebSession.getUser(session);
+    await AccessList.verifyAccess(user, AccessLevel.Organization);
+
+    return await Bin.removeBin(_id);
+  }
+  @Router.post("/bins/:_id")
+  async reportBinStatus(session: WebSessionDoc, _id: ObjectId, status: BinStatus) {
+    // Verify that the user is signed in.
+    await WebSession.isLoggedIn(session);
+
+    return Bin.setBinStatus(_id, status);
+  }
+  // Search Bins
+  @Router.get("/search/bins/status/:input")
+  async searchBinsByStatus(input: BinStatus) {
+    return await Bin.getBinsByQuery({ status: input });
+  }
+  @Router.get("/search/bins/type/:input")
+  async searchBinsByType(input: BinType) {
+    return await Bin.getBinsByQuery({ type: input });
+  }
+  @Router.get("/search/bins/material/:input")
+  async searchBinsByMaterial(input: ObjectId) {
+    return await Bin.getBinsByQuery({ acceptedMaterials: { $in: [input] } });
   }
 }
 

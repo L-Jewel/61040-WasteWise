@@ -11,4 +11,16 @@ export enum MaterialType {
   Donatable,
 }
 
+export enum BinType {
+  Compost,
+  Recycling,
+  Trash,
+  Donation,
+}
+
+export enum BinStatus {
+  Full,
+  NotFull,
+}
+
 export type Coordinate = { x: number; y: number };
