@@ -48,9 +48,10 @@ const router = createRouter({
       props: true,
     },
     {
-      path: "/search",
+      path: "/search/:input(.*)",
       name: "Search",
       component: SearchView,
+      props: true,
     },
     {
       path: "/:catchAll(.*)",
