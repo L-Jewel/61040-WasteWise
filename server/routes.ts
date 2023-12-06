@@ -1,13 +1,14 @@
 import { Router, getExpressRouter } from "./framework/router";
 
 import { ObjectId } from "mongodb";
-import { AccessList, Bin, Fact, Map, Material, User, WebSession } from "./app";
+import { AccessList, Bin, Fact, Map, Material, Score, User, WebSession } from "./app";
 import { BinDoc } from "./concepts/bin";
-import { BadValuesError } from "./concepts/errors";
+import { BadValuesError, NotFoundError } from "./concepts/errors";
 import { MaterialDoc } from "./concepts/material";
 import { UserDoc } from "./concepts/user";
 import { WebSessionDoc } from "./concepts/websession";
 import { AccessLevel, BinStatus, BinType, MaterialType } from "./framework/types";
+import { getScoreNameForBinType } from "./framework/utils";
 
 class Routes {
   // SESSION
@@ -33,15 +34,22 @@ class Routes {
   async getUsers() {
     return await User.getUsers();
   }
+
   @Router.get("/users/:username")
   async getUser(username: string) {
     return await User.getUserByUsername(username);
   }
+
   @Router.post("/users")
   async createUser(session: WebSessionDoc, username: string, password: string) {
     WebSession.isLoggedOut(session);
-    return await User.create(username, password);
+    const result = await User.create(username, password);
+    // Creates scores for user on startup
+    const scoreNames = ["Compost", "Recycle", "Trash", "Donation"];
+    if (result && result.user) await Score.createManyScores(result.user._id, scoreNames);
+    return result;
   }
+
   @Router.patch("/users")
   async updateUser(session: WebSessionDoc, update: Partial<UserDoc>) {
     const user = WebSession.getUser(session);
@@ -178,6 +186,25 @@ class Routes {
     // await AccessList.verifyAccess(user, AccessLevel.Organization);
 
     return await Map.updateBinLocation(_id, location);
+  }
+
+  // Scores
+  @Router.get("/dispose/material/:bin")
+  async dispose(session: WebSessionDoc, materialName: string, bin_id: string) {
+    const user = WebSession.getUser(session);
+    const material = await Material.getMaterialByName(materialName);
+    const binList = await Bin.getBinsByQuery({ _id: new ObjectId(bin_id) });
+    if (!material) throw new NotFoundError(`Material ${materialName} does not exist!`);
+    if (binList.length === 0) throw new NotFoundError(`Bin ${bin_id} does not exist!`);
+
+    const bin = binList[0];
+    if (await Bin.isAcceptedMaterial(material._id, bin._id)) {
+      const binName = getScoreNameForBinType(bin.type);
+      // can prob make scores have a "bin" or "waste" enum instead of name
+      const score = await Score.getScoreForUser(user, binName);
+      if (!score) throw new NotFoundError(`Score for user ${user} not found!`);
+      return await Score.updateScore(score._id, { value: score.value + 1 });
+    }
   }
 }
 

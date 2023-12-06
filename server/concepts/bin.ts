@@ -47,4 +47,12 @@ export default class BinConcept {
     const results = this.bins.readMany(query);
     return results;
   }
+
+  async isAcceptedMaterial(material: ObjectId, _id: ObjectId) {
+    const bin = await this.bins.readOne({
+      _id,
+      acceptedMaterials: material,
+    });
+    return bin ? true : false;
+  }
 }
