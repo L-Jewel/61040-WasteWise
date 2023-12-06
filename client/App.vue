@@ -2,7 +2,7 @@
 import { useToastStore } from "@/stores/toast";
 import { useUserStore } from "@/stores/user";
 import { storeToRefs } from "pinia";
-import { computed, onBeforeMount, ref } from "vue";
+import { computed, onBeforeMount } from "vue";
 import { RouterLink, RouterView, useRoute } from "vue-router";
 
 const currentRoute = useRoute();
@@ -10,7 +10,6 @@ const currentRouteName = computed(() => currentRoute.name);
 const userStore = useUserStore();
 const { isLoggedIn } = storeToRefs(userStore);
 const { toast } = storeToRefs(useToastStore());
-const isMenuClicked = ref(false);
 
 // Make sure to update the session before mounting the app in case the user is already logged in
 onBeforeMount(async () => {
@@ -25,9 +24,12 @@ onBeforeMount(async () => {
 <template>
   <header>
     <nav>
-      <button v-on:click="isMenuClicked = !isMenuClicked">
+      <v-btn id="menu-activator">
         <img src="/client/assets/images/menu.svg" />
-      </button>
+      </v-btn>
+      <!-- <button v-on:click="isMenuClicked = !isMenuClicked">
+        <img src="/client/assets/images/menu.svg" />
+      </button> -->
       <div class="title">
         <img src="@/assets/images/logo.svg" />
         <RouterLink :to="{ name: 'Home' }">
@@ -50,15 +52,27 @@ onBeforeMount(async () => {
       <p>{{ toast.message }}</p>
     </article>
   </header>
-  <ul v-if="isMenuClicked" class="menu">
-    <!-- Make all list items RouterLinks -->
-    <li><RouterLink :to="{ name: 'Home' }" :class="{ underline: currentRouteName == 'Home' }"> Home </RouterLink></li>
-    <li v-if="isLoggedIn"><RouterLink :to="{ name: 'Dashboard' }" :class="{ underline: currentRouteName == 'Dashboard' }"> Dashboard </RouterLink></li>
-    <li><RouterLink :to="{ path: '/search/' }" :class="{ underline: currentRouteName == 'Search' }"> Search </RouterLink></li>
-    <li>Map</li>
-    <li v-if="isLoggedIn">Leaderboard</li>
-    <li v-if="isLoggedIn"><RouterLink :to="{ name: 'Settings' }" :class="{ underline: currentRouteName == 'Settings' }"> Settings </RouterLink></li>
-  </ul>
+  <v-menu activator="#menu-activator">
+    <v-list>
+      <!-- https://vuetifyjs.com/en/components/menus/#api -->
+      <v-list-item>
+        <RouterLink :to="{ name: 'Home' }" :class="{ underline: currentRouteName == 'Home' }"> Home </RouterLink>
+      </v-list-item>
+      <v-list-item v-if="isLoggedIn">
+        <RouterLink :to="{ name: 'Dashboard' }" :class="{ underline: currentRouteName == 'Dashboard' }"> Dashboard </RouterLink>
+      </v-list-item>
+      <v-list-item>
+        <RouterLink :to="{ path: '/search/' }" :class="{ underline: currentRouteName == 'Search' }"> Search </RouterLink>
+      </v-list-item>
+      <v-list-item> <v-list-item-title> Map </v-list-item-title> </v-list-item>
+      <v-list-item v-if="isLoggedIn">
+        <v-list-item-title> Leaderboard </v-list-item-title>
+      </v-list-item>
+      <v-list-item v-if="isLoggedIn">
+        <RouterLink :to="{ name: 'Settings' }" :class="{ underline: currentRouteName == 'Settings' }"> Settings </RouterLink>
+      </v-list-item>
+    </v-list>
+  </v-menu>
   <RouterView />
 </template>
 
@@ -105,35 +119,5 @@ a {
 
 .underline {
   text-decoration: underline;
-}
-
-button {
-  height: 2em;
-  width: 2em;
-}
-
-.menu {
-  position: fixed;
-  list-style-type: none;
-  display: flex;
-  flex-direction: column;
-  width: 15em;
-  background-color: var(--base-bg);
-}
-
-.menu a,
-.menu > li {
-  /* Remove li selector after changing all nav items to RouterLinks (a)*/
-  font-weight: bold;
-  padding: 0.67em;
-  font-size: larger;
-}
-
-.menu a {
-  padding: 0;
-}
-
-.menu > li:hover {
-  background-color: paleturquoise;
 }
 </style>
