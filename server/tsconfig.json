@@ -13,7 +13,7 @@
 
     "rootDir": "../",
     "baseUrl": "./",
-    "outDir": "../dist-server/"
+    "outDir": "../dist-server/",
   },
   "include": ["./**/*.ts", "../api/index.ts"]
 }

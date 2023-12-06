@@ -12,7 +12,7 @@
     "paths": {
       "@/*": ["./*"]
     },
-    "outDir": "../dist/client"
+    "outDir": "../dist/client",
   },
   "include": ["./**/*.ts", "./**/*.vue"]
 }
