@@ -35,8 +35,10 @@ onBeforeMount(async () => {
 
 <style scoped>
 section {
-  max-width: 60em;
-  margin: 0.67em auto 1em;
+  width: 100%;
+  padding-right: 1.5em;
+  padding-top: 0.75rem;
+  padding-bottom: 0.75rem;
   display: flex;
   align-items: center;
   background-color: lightgray;
@@ -52,7 +54,6 @@ section {
 img {
   height: 6em;
   padding: 1em;
-  margin-left: 1em;
 }
 
 .fact {

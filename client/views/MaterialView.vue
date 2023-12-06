@@ -1,21 +1,17 @@
 <script setup lang="ts">
 import MaterialInfoComponent from "@/components/Material/MaterialInfoComponent.vue";
-import { useUserStore } from "@/stores/user";
-import { storeToRefs } from "pinia";
 
-const { currentUsername, isLoggedIn } = storeToRefs(useUserStore());
-
-
-const props = defineProps(['materialName']);
-
-// const material = $route.params.material;    // TODO: fix hard code for now
+const props = defineProps(["materialName"]);
 </script>
 
 <template>
-    <main>
-        <MaterialInfoComponent :materialName="props.materialName" />
-    </main>
+  <main>
+    <MaterialInfoComponent :materialName="props.materialName" />
+  </main>
 </template>
 
 <style scoped>
+main {
+  margin: 1.5rem 15%;
+}
 </style>

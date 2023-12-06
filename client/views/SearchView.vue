@@ -1,12 +1,13 @@
 <script setup lang="ts">
-import { ref } from "vue";
+import { onBeforeMount, ref } from "vue";
 import MaterialCardSection from "../components/Material/MaterialCardSection.vue";
 import { fetchy } from "../utils/fetchy";
 
+const props = defineProps(["input"]);
 const isLoadingSearch = ref(false);
 const searchQuery = ref("");
 const searchResults = ref<Array<Record<string, string>>>([]);
-const emptyResults = ref(false)
+const emptyResults = ref(false);
 
 async function searchByMaterial() {
   // Clear out the search results.
@@ -16,7 +17,7 @@ async function searchByMaterial() {
   // Otherwise, attempt to query the backend for materials.
   isLoadingSearch.value = true;
   emptyResults.value = false;
-  
+
   try {
     searchResults.value = await fetchy(`/api/search/material/${searchQuery.value}`, "GET");
     console.log(searchResults.value);
@@ -29,6 +30,13 @@ async function searchByMaterial() {
 
   isLoadingSearch.value = false;
 }
+
+onBeforeMount(async () => {
+  if (props.input) {
+    searchQuery.value = props.input;
+    await searchByMaterial();
+  }
+});
 </script>
 
 <template>
@@ -40,9 +48,7 @@ async function searchByMaterial() {
       </fieldset>
     </form>
     <MaterialCardSection :materialList="searchResults" :key="searchResults.length" />
-    <article v-if="emptyResults">
-      No information found for this item :()
-    </article>
+    <article v-if="emptyResults">No information found for this item.</article>
   </main>
 </template>
 
