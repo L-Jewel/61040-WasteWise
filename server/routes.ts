@@ -145,9 +145,13 @@ class Routes {
   @Router.post("/bins/:_id")
   async reportBinStatus(session: WebSessionDoc, _id: ObjectId, status: BinStatus) {
     // Verify that the user is signed in.
-    await WebSession.isLoggedIn(session);
+    WebSession.isLoggedIn(session);
 
     return Bin.setBinStatus(_id, status);
+  }
+  @Router.get("/bins/:_id")
+  async getBinInfo(_id: ObjectId) {
+    return await Bin.getBinById(_id);
   }
   // Search Bins
   @Router.get("/search/bins/status/:input")
@@ -179,6 +183,11 @@ class Routes {
 
     return await Map.updateBinLocation(_id, location);
   }
+
+  // @Router.get("/do")
+  // async doThing() {
+  //   Bin.updateBin();
+  // }
 }
 
 export default getExpressRouter(new Routes());

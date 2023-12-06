@@ -13,7 +13,7 @@ main {
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin: 2rem 15%;
+  margin: 1rem 0;
   gap: 2rem;
 }
 </style>
