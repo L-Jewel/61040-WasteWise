@@ -1,11 +1,10 @@
 <script setup lang="ts">
-import * as L from "leaflet";
-//declare module "leaflet";
+import * as L from "leaflet"; // made components/leaflet.d.ts file to make this import work
 import "leaflet/dist/leaflet.css";
 
-import { onBeforeMount, ref } from "vue";
+// reference page: https://javascript.plainenglish.io/building-interactive-mapping-applications-with-leaflet-js-and-vues-options-api-6f820b8d6286
 
-const mapElement = ref(null);
+import { ref } from "vue";
 
 const loaded = ref(false);
 const mapId = "leaflet-map";
@@ -13,8 +12,8 @@ const geojsonData = ref(null);
 const mapInstance = ref(null);
 const layerControlInstance = ref(null);
 const mapOptions = {
-  center: L.latLng(37.0902, -95.7129),
-  zoom: 4,
+  center: L.latLng(42.360001, -71.092003), // <-- MIT, for US wide view: L.latLng(37.0902, -95.7129)
+  zoom: 17, // US wide view: 4
   zoomControl: true,
   zoomAnimation: false,
   maxBounds: L.latLngBounds(L.latLng(18.91619, -171.791110603), L.latLng(71.3577635769, -66.96466)),
@@ -22,21 +21,14 @@ const mapOptions = {
 };
 
 async function initMap() {
-  console.log("BENCHMARK 1 again");
-  mapInstance.value = null;
-  //const leafletMap = L.map(mapElement.value);
   const leafletMap = L.map(mapId, mapOptions);
-  console.log("BENCHMARK 1a");
   const tile = L.tileLayer(`https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png`, {
     attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
   }).addTo(leafletMap);
-  console.log("BENCHMARK 1b");
   layerControlInstance.value = L.control.layers({ OpenStreetMap: tile }).addTo(leafletMap);
-  console.log("BENCHMARK 1c");
   leafletMap.on("zoomstart", () => {
     console.log("ZOOM STARTED");
   });
-  console.log("BENCHMARK 1d");
 
   mapInstance.value = leafletMap;
 }
@@ -54,11 +46,11 @@ async function fetchData() {
 }
 
 async function initFetchMap() {
-  console.log("BENCHMARK 1");
+  console.log("Initializing Map... ");
   await initMap();
-  console.log("BENCHMARK 2");
+  console.log("Map Initialized! Fetching Data... ");
   await fetchData();
-  console.log("BENCHMARK 3");
+  console.log("Done!");
   loaded.value = true;
 }
 
@@ -77,28 +69,17 @@ async function onEachFeature(feature: any, layer: any) {
     }
   }
 }
-
-onBeforeMount(async () => {
-  setTimeout(async () => {
-    // your mounted code
-    // console.log("BENCHMARK 1");
-    // await initMap();
-    // console.log("BENCHMARK 2");
-    // await fetchData();
-    // console.log("BENCHMARK 3");
-    //loaded.value = true;
-  }, 1);
-});
 </script>
 
 <template>
   <main>
-    <button class="btn-small pure-button" @click="initFetchMap()">Generate Map</button>
-    <div :id="mapId" style="height: 850px; width: 500px"></div>
-    <div v-if="loaded">
-      <p>why no map</p>
-      <div :id="mapId" style="height: 850px; width: 500px"></div>
+    <div v-if="!loaded">
+      <button class="btn-large pure-button" @click="initFetchMap()">Generate Map</button>
     </div>
+    <div v-else>
+      <p>Map loaded!</p>
+    </div>
+    <div :id="mapId" style="height: 500px; width: 800px"></div>
   </main>
 </template>
 
