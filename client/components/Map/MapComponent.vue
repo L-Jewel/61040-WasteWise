@@ -54,6 +54,10 @@ async function initFetchMap() {
   loaded.value = true;
 }
 
+async function refreshPage() {
+  window.location.reload();
+}
+
 async function onEachFeature(feature: any, layer: any) {
   if (layer) {
     if (feature.properties && feature.properties.name) {
@@ -74,10 +78,10 @@ async function onEachFeature(feature: any, layer: any) {
 <template>
   <main>
     <div v-if="!loaded">
-      <button class="btn-large pure-button" @click="initFetchMap()">Generate Map</button>
+      <v-btn type="submit" variant="tonal" size="x-large" @click="initFetchMap">Generate Map</v-btn>
     </div>
     <div v-else>
-      <p>Map loaded!</p>
+      <v-btn type="submit" variant="tonal" size="x-large" @click="refreshPage">Refresh Page</v-btn>
     </div>
     <div :id="mapId" style="height: 500px; width: 800px"></div>
   </main>
