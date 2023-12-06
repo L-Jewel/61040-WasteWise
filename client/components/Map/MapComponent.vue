@@ -14,7 +14,7 @@ const mapInstance = ref(null);
 const layerControlInstance = ref(null);
 const mapOptions = {
   center: L.latLng(42.360001, -71.092003), // <-- MIT, for US wide view: L.latLng(37.0902, -95.7129)
-  zoom: 17, // US wide view: 4
+  zoom: 16, // US wide view: 4
   zoomControl: true,
   zoomAnimation: false,
   maxBounds: L.latLngBounds(L.latLng(18.91619, -171.791110603), L.latLng(71.3577635769, -66.96466)),
@@ -57,6 +57,7 @@ async function generateMap() {
 async function getBins() {
   let bins;
   try {
+    //await fetchy(`/api/bins`, "POST", { body: { type: 0, acceptedMaterials: [], misdisposedMaterials: [], location: [42.36161, -71.090635] } });
     bins = await fetchy(`/api/map`, "GET", { query: { longitude: "42.360001", latitude: "-71.092003" } }); // hardcoded location for now
   } catch (_) {
     console.log("failed to fetch bins");
