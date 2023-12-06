@@ -1,14 +1,15 @@
 <script setup lang="ts">
-import * as L from "leaflet"; // made components/leaflet.d.ts file to make this import work
-import "leaflet/dist/leaflet.css";
+import { fetchy } from "@/utils/fetchy";
+import { ref } from "vue";
 
 // reference page: https://javascript.plainenglish.io/building-interactive-mapping-applications-with-leaflet-js-and-vues-options-api-6f820b8d6286
 
-import { ref } from "vue";
+import * as L from "leaflet"; // made components/leaflet.d.ts file to make this import work
+import "leaflet/dist/leaflet.css";
 
 const loaded = ref(false);
 const mapId = "leaflet-map";
-const geojsonData = ref(null);
+const binData = ref(null);
 const mapInstance = ref(null);
 const layerControlInstance = ref(null);
 const mapOptions = {
@@ -30,55 +31,47 @@ async function initMap() {
     console.log("ZOOM STARTED");
   });
 
-  mapInstance.value = leafletMap;
-}
-
-async function fetchData() {
-  const url = "https://api.npoint.io/fdbc5b08a7e7eccb6052";
-
-  try {
-    const response = await fetch(url);
-    const data = await response.json();
-    geojsonData.value = data;
-  } catch (err) {
-    console.log("err", err);
+  if (binData.value) {
+    for (const bin of binData.value as any) {
+      const marker = L.marker(bin.location).addTo(leafletMap);
+      marker.on("click", () => console.log("I'm clicked!"));
+    }
   }
-}
 
-async function initFetchMap() {
-  console.log("Initializing Map... ");
-  await initMap();
-  console.log("Map Initialized! Fetching Data... ");
-  await fetchData();
-  console.log("Done!");
-  loaded.value = true;
+  mapInstance.value = leafletMap;
 }
 
 async function refreshPage() {
   window.location.reload();
 }
 
-async function onEachFeature(feature: any, layer: any) {
-  if (layer) {
-    if (feature.properties && feature.properties.name) {
-      layer.bindPopup(feature.properties.name);
-      layer.on("mouseover", () => {
-        layer.openPopup();
-      });
-      layer.on("mouseout", () => {
-        layer.closePopup();
-      });
-    } else {
-      console.log("Invalid layer:", feature);
-    }
+async function generateMap() {
+  console.log("Fetching Bin Locations... ");
+  await getBins();
+  console.log("Initializing Leaflet Map... ");
+  await initMap();
+  console.log("Done!");
+  loaded.value = true;
+}
+
+async function getBins() {
+  let bins;
+  try {
+    bins = await fetchy(`/api/map`, "GET", { query: { longitude: "42.360001", latitude: "-71.092003" } }); // hardcoded location for now
+  } catch (_) {
+    console.log("failed to fetch bins");
+    console.log(_);
+    return;
   }
+  binData.value = bins;
+  console.log(bins);
 }
 </script>
 
 <template>
   <main>
     <div v-if="!loaded">
-      <v-btn type="submit" variant="tonal" size="x-large" @click="initFetchMap">Generate Map</v-btn>
+      <v-btn type="submit" variant="tonal" size="x-large" @click="generateMap">Generate Map</v-btn>
     </div>
     <div v-else>
       <v-btn type="submit" variant="tonal" size="x-large" @click="refreshPage">Refresh Page</v-btn>
