@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { fetchy } from "@/utils/fetchy";
 import { ref } from "vue";
+import ReportBinStatusComponent from "./ReportBinStatusComponent.vue";
 
 // reference page: https://javascript.plainenglish.io/building-interactive-mapping-applications-with-leaflet-js-and-vues-options-api-6f820b8d6286
 
@@ -21,6 +22,9 @@ const mapOptions = {
   layers: [],
 };
 
+const binStatusDialogVisible = ref(false)
+const binClicked = ref()
+
 async function initMap() {
   const leafletMap = L.map(mapId, mapOptions);
   const tile = L.tileLayer(`https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png`, {
@@ -34,7 +38,11 @@ async function initMap() {
   if (binData.value) {
     for (const bin of binData.value as any) {
       const marker = L.marker(bin.location).addTo(leafletMap);
-      marker.on("click", () => console.log("I'm clicked!"));
+      marker.on("click", () => {
+        binStatusDialogVisible.value = true
+        binClicked.value = bin.bin
+        console.log("I'm clicked!", binClicked.value)
+      });
     }
   }
 
@@ -79,6 +87,8 @@ async function getBins() {
     </div>
     <div :id="mapId" style="height: 500px; width: 800px"></div>
   </main>
+
+  <ReportBinStatusComponent :dialog-visible="binStatusDialogVisible" :bin-id="binClicked" @hide-dialog="binStatusDialogVisible=false"/>
 </template>
 
 <style>
