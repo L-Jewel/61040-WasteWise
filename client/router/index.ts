@@ -5,6 +5,7 @@ import { useUserStore } from "@/stores/user";
 import DashboardView from "../views/DashboardView.vue";
 import HomeView from "../views/HomeView.vue";
 import LoginView from "../views/LoginView.vue";
+import MapView from "../views/MapView.vue";
 import MaterialView from "../views/MaterialView.vue";
 import NotFoundView from "../views/NotFoundView.vue";
 import SearchView from "../views/SearchView.vue";
@@ -51,6 +52,12 @@ const router = createRouter({
       path: "/search/:input(.*)",
       name: "Search",
       component: SearchView,
+      props: true,
+    },
+    {
+      path: "/map/",
+      name: "Map",
+      component: MapView,
       props: true,
     },
     {
