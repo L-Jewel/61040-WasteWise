@@ -25,7 +25,6 @@ const mapOptions = {
 };
 
 const binStatusDialogVisible = ref(false)
-const binClicked = ref()
 
 async function initMap() {
   const leafletMap = L.map(mapId, mapOptions);
@@ -42,8 +41,7 @@ async function initMap() {
       const marker = L.marker(bin.location).addTo(leafletMap);
       marker.on("click", () => {
         binStatusDialogVisible.value = true
-        binClicked.value = bin.bin
-        console.log("I'm clicked!", binClicked.value)
+        selectedBin.value = bin.bin
       });
     }
   }
@@ -92,7 +90,7 @@ async function getBins() {
     </div>
   </main>
 
-  <ReportBinStatusComponent :dialog-visible="binStatusDialogVisible" :bin-id="binClicked" @hide-dialog="binStatusDialogVisible=false"/>
+  <ReportBinStatusComponent :dialog-visible="binStatusDialogVisible" :bin-id="selectedBin" @hide-dialog="binStatusDialogVisible=false"/>
 </template>
 
 <style>
