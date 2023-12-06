@@ -6,13 +6,13 @@ const props = defineProps(["material"]);
 const materialInfo = ref(props.material);
 const IMAGE_WIDTH = "100%";
 const redirectToMaterialPage = () => {
-  void router.push({ path: `material/${materialInfo.value.name}` });
+  void router.push({ path: `/material/${materialInfo.value.name}` });
 };
 </script>
 
 <template>
   <article>
-    <RouterLink :to="{ path: `material/${materialInfo.name}` }">
+    <RouterLink :to="{ path: `/material/${materialInfo.name}` }">
       <p>
         <strong>{{ materialInfo.name }}</strong>
       </p>

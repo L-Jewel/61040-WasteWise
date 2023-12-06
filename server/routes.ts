@@ -134,12 +134,12 @@ class Routes {
     return await Bin.updateBin(_id, update);
   }
   @Router.delete("/bins/:_id")
-  async deleteBin(session: WebSessionDoc, _id: ObjectId) {
+  async deleteBin(session: WebSessionDoc, _id: string) {
     // Verify that the user signed in is an Organization
     const user = await WebSession.getUser(session);
     await AccessList.verifyAccess(user, AccessLevel.Organization);
 
-    await Bin.removeBin(_id);
+    await Bin.removeBin(new ObjectId(_id));
     return await Map.removeBin(_id);
   }
   @Router.post("/bins/:_id")
@@ -165,17 +165,17 @@ class Routes {
 
   // MAP
   @Router.get("/map")
-  async getBinsByLocation(location: [number, number]) {
-    return await Map.getBinsByLocation(location);
+  async getBinsByLocation(longitude: string, latitude: string) {
+    return await Map.getBinsByLocation(longitude, latitude);
   }
   @Router.get("/map/:_id")
-  async getBinLocation(_id: ObjectId) {
+  async getBinLocation(_id: string) {
     return await Map.getBinLocation(_id);
   }
-  @Router.patch("/map/:_id")
-  async updateBinLocation(session: WebSessionDoc, _id: ObjectId, location: [number, number]) {
-    const user = WebSession.getUser(session);
-    await AccessList.verifyAccess(user, AccessLevel.Organization);
+  @Router.patch("/map")
+  async updateBinLocation(session: WebSessionDoc, _id: string, location: [number, number]) {
+    // const user = WebSession.getUser(session);
+    // await AccessList.verifyAccess(user, AccessLevel.Organization);
 
     return await Map.updateBinLocation(_id, location);
   }

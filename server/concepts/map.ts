@@ -18,37 +18,41 @@ export default class MapConcept {
     return { msg: "Bin successfully created!", binMarker: await this.map.readOne({ _id }) };
   }
 
-  async removeBin(bin: ObjectId) {
+  async removeBin(bin: string) {
     // assert bin exists
     await this.getBinLocation(bin);
 
-    await this.map.deleteOne({ bin });
+    await this.map.deleteOne({ bin: new ObjectId(bin) });
     return { msg: "Bin successfully deleted!" };
   }
 
-  async updateBinLocation(bin: ObjectId, location: [number, number]) {
+  async updateBinLocation(bin: string, location: [number, number]) {
     // assert bin exists
     await this.getBinLocation(bin);
 
     const _id = await this.map.updateOne(
-      { bin },
+      { bin: new ObjectId(bin) },
       {
-        bin,
+        bin: new ObjectId(bin),
         location: location,
       },
     );
-    return { msg: "Bin location successfully updated!", binMarker: this.map.readOne({ bin }) };
+    return { msg: "Bin location successfully updated!" };
   }
 
   // https://www.mongodb.com/docs/manual/reference/operator/query/near/
   // get all bins up to 0.1 radians away from location
-  async getBinsByLocation(location: [number, number]) {
-    const results = await this.map.readMany({ location: { $near: location, $maxDistance: 0.1 } });
-    return results;
+  async getBinsByLocation(longitude: string, latitude: string) {
+    const bins = await this.map.readMany({});
+
+    // filter results to be a 2x2 square centered at longitude, latitude
+    const filteredBins = bins.filter((bin) => Math.abs(bin.location[0] - parseFloat(longitude)) <= 1 && Math.abs(bin.location[1] - parseFloat(latitude)) <= 1);
+    return filteredBins;
   }
 
-  async getBinLocation(bin: ObjectId) {
-    const results = await this.map.readOne({ bin });
+  async getBinLocation(bin: string) {
+    console.log(bin);
+    const results = await this.map.readOne({ bin: new ObjectId(bin) });
 
     if (results) {
       return results.location;
