@@ -1,6 +1,7 @@
 import { Filter, ObjectId } from "mongodb";
 import DocCollection, { BaseDoc } from "../framework/doc";
 import { BinStatus, BinType } from "../framework/types";
+import { NotFoundError } from "./errors";
 
 export interface BinDoc extends BaseDoc {
   type: BinType;
@@ -43,8 +44,15 @@ export default class BinConcept {
   }
 
   // Querying the database
+  async getBinById(_id: ObjectId) {
+    const result = await this.bins.readOne({ _id });
+    if (result) {
+      return result;
+    }
+    throw new NotFoundError("Bin not found!");
+  }
   async getBinsByQuery(query: Filter<BinDoc>) {
-    const results = this.bins.readMany(query);
+    const results = await this.bins.readMany(query);
     return results;
   }
 

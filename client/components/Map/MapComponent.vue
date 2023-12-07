@@ -1,6 +1,8 @@
 <script setup lang="ts">
+import BinOverlayComponent from "@/components/Bin/BinOverlayComponent.vue";
 import { fetchy } from "@/utils/fetchy";
 import { ref } from "vue";
+import ReportBinStatusComponent from "./ReportBinStatusComponent.vue";
 
 // reference page: https://javascript.plainenglish.io/building-interactive-mapping-applications-with-leaflet-js-and-vues-options-api-6f820b8d6286
 
@@ -10,6 +12,7 @@ import "leaflet/dist/leaflet.css";
 const loaded = ref(false);
 const mapId = "leaflet-map";
 const binData = ref(null);
+const selectedBin = ref("");
 const mapInstance = ref(null);
 const layerControlInstance = ref(null);
 const mapOptions = {
@@ -20,6 +23,8 @@ const mapOptions = {
   maxBounds: L.latLngBounds(L.latLng(18.91619, -171.791110603), L.latLng(71.3577635769, -66.96466)),
   layers: [],
 };
+
+const binStatusDialogVisible = ref(false)
 
 async function initMap() {
   const leafletMap = L.map(mapId, mapOptions);
@@ -34,7 +39,10 @@ async function initMap() {
   if (binData.value) {
     for (const bin of binData.value as any) {
       const marker = L.marker(bin.location).addTo(leafletMap);
-      marker.on("click", () => console.log("I'm clicked!"));
+      marker.on("click", () => {
+        binStatusDialogVisible.value = true
+        selectedBin.value = bin.bin
+      });
     }
   }
 
@@ -57,7 +65,6 @@ async function generateMap() {
 async function getBins() {
   let bins;
   try {
-    //await fetchy(`/api/bins`, "POST", { body: { type: 0, acceptedMaterials: [], misdisposedMaterials: [], location: [42.36161, -71.090635] } });
     bins = await fetchy(`/api/map`, "GET", { query: { longitude: "42.360001", latitude: "-71.092003" } }); // hardcoded location for now
   } catch (_) {
     console.log("failed to fetch bins");
@@ -77,15 +84,41 @@ async function getBins() {
     <div v-else>
       <v-btn type="submit" variant="tonal" size="x-large" @click="refreshPage">Refresh Page</v-btn>
     </div>
-    <div :id="mapId" style="height: 500px; width: 800px"></div>
+    <div class="map-component">
+      <div :id="mapId" style="height: 90vh; width: 90%"></div>
+      <BinOverlayComponent v-if="loaded" :bin="selectedBin" :key="selectedBin" class="bin-overlay" />
+    </div>
   </main>
+
+  <ReportBinStatusComponent :dialog-visible="binStatusDialogVisible" :bin-id="selectedBin" @hide-dialog="binStatusDialogVisible=false"/>
 </template>
 
 <style>
+main {
+  width: 100%;
+}
+
 .map {
   position: absolute;
   width: 100%;
   height: 100%;
   overflow: hidden;
+}
+
+.bin-overlay {
+  position: absolute;
+  top: 0;
+  right: 5%;
+  z-index: 1000;
+  max-height: 100%;
+  width: 25%;
+  padding: 0.5rem;
+}
+
+.map-component {
+  display: flex;
+  justify-content: center;
+  position: relative;
+  width: 100%;
 }
 </style>
