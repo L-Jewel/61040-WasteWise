@@ -112,10 +112,10 @@ onBeforeMount(async () => {
             />
           </div>
         </div>
-      </div>
-      <div class="bin-btn-row" v-if="isLoggedIn">
-        <v-btn>Log Recycle</v-btn>
-        <v-btn>Report Bin Capacity</v-btn>
+        <div class="bin-btn-col">
+          <v-btn variant="tonal" block>Log Recycle</v-btn>
+          <v-btn variant="tonal" block>Report Bin Capacity</v-btn>
+        </div>
       </div>
       <v-progress-linear v-if="!loaded" indeterminate />
     </v-card>
@@ -158,7 +158,9 @@ onBeforeMount(async () => {
   max-width: 30%;
 }
 
-.bin-btn-row {
+.bin-btn-col {
   display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
 }
 </style>
