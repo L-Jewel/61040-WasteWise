@@ -122,11 +122,8 @@ onBeforeMount(async () => {
       </div>
       <v-progress-linear v-if="!loaded" indeterminate />
     </v-card>
-  </article>
-
-  <template>
     <ReportBinStatusComponent :dialog-visible="binStatusDialogVisible" :bin-id="props.bin" @hide-dialog="binStatusDialogVisible = false" />
-  </template>
+  </article>
 
 </template>
 
