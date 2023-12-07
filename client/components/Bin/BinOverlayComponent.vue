@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import ReportBinStatusComponent from "@/components/Map/ReportBinStatusComponent.vue";
 import { useUserStore } from "@/stores/user";
 import { storeToRefs } from "pinia";
+import { onBeforeMount, ref } from "vue";
 import { onBeforeMount, ref } from "vue";
 import router from "../../router";
 import { fetchy } from "../../utils/fetchy";
@@ -132,9 +132,9 @@ onBeforeMount(async () => {
         </div>
       </div>
     </v-card>
+    <ReportBinStatusComponent :dialog-visible="binStatusDialogVisible" :bin-id="props.bin" @hide-dialog="binStatusDialogVisible = false" />
   </article>
 
-  <ReportBinStatusComponent :dialog-visible="binStatusDialogVisible" :bin-id="props.bin" @hide-dialog="binStatusDialogVisible = false" />
 </template>
 
 <style scoped>
