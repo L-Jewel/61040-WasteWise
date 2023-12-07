@@ -28,6 +28,7 @@ const mapOptions = {
 const binStatusDialogVisible = ref(false);
 
 async function initMap() {
+  // initialize leaflet map
   const leafletMap = L.map(mapId, mapOptions);
   const tile = L.tileLayer(`https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png`, {
     attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
@@ -37,16 +38,25 @@ async function initMap() {
     console.log("ZOOM STARTED");
   });
 
-  const markerColors = new Map([
-    [0, "green"],
-    [1, "blue"],
-    [2, "black"],
-    [3, "orange"],
-  ]);
+  // create icons with different colors
+  const markerColors = new Map([]);
+  for (const [i, color] of ["green", "blue", "black", "orange"].entries()) {
+    const colorIcon = new L.Icon({
+      iconUrl: "https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-" + color + ".png",
+      shadowUrl: "https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png",
+      iconSize: [25, 41],
+      iconAnchor: [12, 41],
+      popupAnchor: [1, -34],
+      shadowSize: [41, 41],
+    });
+    markerColors.set(i, colorIcon);
+  }
+
+  // populate map with bins using corresponding colors
   for (const key of binData.value.keys()) {
     const bins = binData.value.get(key);
     for (const bin of bins!) {
-      const marker = L.marker(bin.location, { markerColor: markerColors.get(key) }).addTo(leafletMap);
+      const marker = L.marker(bin.location, { icon: markerColors.get(key) }).addTo(leafletMap);
       marker.on("click", () => {
         binStatusDialogVisible.value = true;
         selectedBin.value = bin.bin;
@@ -71,7 +81,7 @@ async function getBins() {
   for (let i = 0; i < 4; i++) {
     let bins;
     try {
-      bins = await fetchy(`/api/map`, "GET", { query: { longitude: "42.360001", latitude: "-71.092003" } }); // hardcoded location for now
+      bins = await fetchy(`/api/map`, "GET", { query: { longitude: "42.360001", latitude: "-71.092003", type: i.toString() } }); // hardcoded location for now
     } catch (_) {
       console.log("failed to fetch bins");
       console.log(_);
