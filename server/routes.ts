@@ -8,7 +8,7 @@ import { MaterialDoc } from "./concepts/material";
 import { UserDoc } from "./concepts/user";
 import { WebSessionDoc } from "./concepts/websession";
 import { AccessLevel, BinStatus, BinType, MaterialType } from "./framework/types";
-import { getScoreNameForMaterialType } from "./framework/utils";
+import { getScoreNameForBinType, getScoreNameForMaterialType } from "./framework/utils";
 
 class Routes {
   // SESSION
@@ -210,8 +210,8 @@ class Routes {
   }
 
   // Disposal of materials
-  @Router.patch("/dispose/:materialName")
-  async dispose(session: WebSessionDoc, materialName: string) {
+  @Router.patch("/dispose/material/:materialName")
+  async disposeMaterial(session: WebSessionDoc, materialName: string) {
     const user = WebSession.getUser(session);
     const material = await Material.getMaterial(materialName);
     const scoreName = getScoreNameForMaterialType(material.type.toString());
@@ -219,6 +219,16 @@ class Routes {
     const score = await Score.getScoreForUser(user, scoreName);
     if (!score) throw new NotFoundError(`Score for user ${user} not found!`);
     console.log(`Score: ${typeof score.value}`);
+    return await Score.updateScore(score._id, { value: score.value + 1 });
+  }
+
+  @Router.patch("/dispose/bin/:binNumber")
+  async disposeInBin(session: WebSessionDoc, binNumber: string) {
+    const user = WebSession.getUser(session);
+    const scoreName = getScoreNameForBinType(binNumber);
+    // can prob make scores have a "bin" or "waste" enum instead of name
+    const score = await Score.getScoreForUser(user, scoreName);
+    if (!score) throw new NotFoundError(`Score for user ${user} not found!`);
     return await Score.updateScore(score._id, { value: score.value + 1 });
   }
 
