@@ -1,5 +1,3 @@
-import { BinType } from "./types";
-
 export function getParamNames(f: Function) {
   return f
     .toString()
@@ -8,18 +6,19 @@ export function getParamNames(f: Function) {
     .map((param: string) => param.split("=")[0].trim()); // remove whitespaces
 }
 
-export function getScoreNameForBinType(binType: BinType) {
-  switch (binType) {
-    case BinType.Recycling:
+export function getScoreNameForMaterialType(materialType: string) {
+  switch (materialType) {
+    case "Recyclable":
       return "Recycle";
 
-    case BinType.Compost:
+    case "Compostable":
       return "Compost";
 
-    case BinType.Trash:
+    case "SolidWaste":
       return "Trash";
 
-    case BinType.Donation:
+    case "Donatable":
       return "Donation";
   }
+  throw new Error("Material type not found!");
 }

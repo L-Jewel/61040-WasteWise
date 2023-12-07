@@ -8,7 +8,7 @@ import { MaterialDoc } from "./concepts/material";
 import { UserDoc } from "./concepts/user";
 import { WebSessionDoc } from "./concepts/websession";
 import { AccessLevel, BinStatus, BinType, MaterialType } from "./framework/types";
-import { getScoreNameForBinType } from "./framework/utils";
+import { getScoreNameForMaterialType } from "./framework/utils";
 
 class Routes {
   // SESSION
@@ -210,22 +210,16 @@ class Routes {
   }
 
   // Disposal of materials
-  @Router.patch("/dispose/material/:bin")
-  async dispose(session: WebSessionDoc, materialName: string, bin_id: string) {
+  @Router.patch("/dispose/:materialName")
+  async dispose(session: WebSessionDoc, materialName: string) {
     const user = WebSession.getUser(session);
     const material = await Material.getMaterial(materialName);
-    const binList = await Bin.getBinsByQuery({ _id: new ObjectId(bin_id) });
-    if (!material) throw new NotFoundError(`Material ${materialName} does not exist!`);
-    if (binList.length === 0) throw new NotFoundError(`Bin ${bin_id} does not exist!`);
-
-    const bin = binList[0];
-    if (await Bin.isAcceptedMaterial(material._id, bin._id)) {
-      const binName = getScoreNameForBinType(bin.type);
-      // can prob make scores have a "bin" or "waste" enum instead of name
-      const score = await Score.getScoreForUser(user, binName);
-      if (!score) throw new NotFoundError(`Score for user ${user} not found!`);
-      return await Score.updateScore(score._id, { value: score.value + 1 });
-    }
+    const scoreName = getScoreNameForMaterialType(material.type.toString());
+    // can prob make scores have a "bin" or "waste" enum instead of name
+    const score = await Score.getScoreForUser(user, scoreName);
+    if (!score) throw new NotFoundError(`Score for user ${user} not found!`);
+    console.log(`Score: ${typeof score.value}`);
+    return await Score.updateScore(score._id, { value: score.value + 1 });
   }
 
   // Dashboard
