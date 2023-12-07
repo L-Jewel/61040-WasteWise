@@ -2,7 +2,6 @@
 import { fetchy } from "@/utils/fetchy";
 import { onBeforeMount, ref } from "vue";
 
-// // const { isLoggedIn, currentUsername } = storeToRefs(useUserStore());
 const props = defineProps(["scoreName", "typeOfDisposal"]);
 const score = ref(0);
 
@@ -39,13 +38,13 @@ section {
   display: flex;
   align-items: center;
   gap: 1em;
+  padding-left: 1.5em;
+  padding-right: 1.5em;
 }
 
 .score {
   font-size: 6em;
   font-weight: bold;
-  padding-left: 1.5rem;
-  padding-right: 1.5rem;
 }
 
 .score-description {

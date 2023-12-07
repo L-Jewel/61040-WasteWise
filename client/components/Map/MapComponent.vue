@@ -24,7 +24,6 @@ const mapOptions = {
   layers: [],
 };
 
-
 async function initMap() {
   // initialize leaflet map
   const leafletMap = L.map(mapId, mapOptions);
