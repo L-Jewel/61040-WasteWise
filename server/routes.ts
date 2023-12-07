@@ -209,6 +209,14 @@ class Routes {
     throw new NotFoundError(`Score ${name} does not exists for user ${user}!`);
   }
 
+  @Router.patch("/scores/:name")
+  async incrementScore(session: WebSessionDoc, name: string) {
+    const user = WebSession.getUser(session);
+    const score = await Score.getScoreForUser(user, name);
+    if (!score) throw new NotFoundError(`Score for user ${user} not found!`);
+    return await Score.updateScore(score._id, { value: score.value + 1 });
+  }
+
   // Disposal of materials
   @Router.patch("/dispose/material/:materialName")
   async disposeMaterial(session: WebSessionDoc, materialName: string) {
@@ -218,7 +226,6 @@ class Routes {
     // can prob make scores have a "bin" or "waste" enum instead of name
     const score = await Score.getScoreForUser(user, scoreName);
     if (!score) throw new NotFoundError(`Score for user ${user} not found!`);
-    console.log(`Score: ${typeof score.value}`);
     return await Score.updateScore(score._id, { value: score.value + 1 });
   }
 

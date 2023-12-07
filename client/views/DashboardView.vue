@@ -13,8 +13,9 @@ const { isLoggedIn, currentUsername } = storeToRefs(useUserStore());
       <h1 v-if="isLoggedIn" class="user">{{ currentUsername }}</h1>
       <h2 v-if="isLoggedIn">WasteWizard</h2>
       <section v-if="isLoggedIn" class="scores">
-        <ScoreCard score-name="Recycle" type-of-disposal="recycled" />
-        <ScoreCard score-name="Compost" type-of-disposal="composted" />
+        <!-- props need to be exactly the right string to function properly -->
+        <ScoreCard disposal-type="Recycle" />
+        <ScoreCard disposal-type="Compost" />
       </section>
       <h1 v-else>Please login!</h1>
     </section>
