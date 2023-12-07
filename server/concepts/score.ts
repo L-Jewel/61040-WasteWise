@@ -24,21 +24,13 @@ export default class ScoreConcept {
     throw new NotFoundError("Score does not exist!");
   }
 
-  async createManyScores(user: ObjectId, names: string[], initVals?: number[]) {
-    if (initVals === undefined) initVals = [];
-    if (initVals.length < names.length) {
-      const start = initVals.length - 1;
-      const deleteCount = names.length - initVals.length;
-      initVals = initVals.splice(start, deleteCount, 0);
-    }
-
-    const scores = [];
-    for (let i = 0; i < names.length; i++) {
-      const name = names[i];
-      const value = initVals[i];
+  async createManyScores(user: ObjectId, names: string[], initVal?: number) {
+    if (initVal === undefined) initVal = 0;
+    const scores: ObjectId[] = [];
+    for (const name of names) {
       const _id = await this.scores.createOne({
         name,
-        value,
+        value: initVal,
         user,
       });
       scores.push(_id);

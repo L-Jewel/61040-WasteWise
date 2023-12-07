@@ -189,7 +189,16 @@ class Routes {
   }
 
   // Scores
-  @Router.get("/dispose/material/:bin")
+  @Router.get("/scores/:name")
+  async getScore(session: WebSessionDoc, name: string) {
+    const user = WebSession.getUser(session);
+    const score = await Score.getScoreForUser(user, name);
+    if (score) return score;
+    throw new NotFoundError(`Score ${name} does not exists for user ${user}!`);
+  }
+
+  // Disposal of materials
+  @Router.patch("/dispose/material/:bin")
   async dispose(session: WebSessionDoc, materialName: string, bin_id: string) {
     const user = WebSession.getUser(session);
     const material = await Material.getMaterialByName(materialName);
@@ -204,6 +213,20 @@ class Routes {
       const score = await Score.getScoreForUser(user, binName);
       if (!score) throw new NotFoundError(`Score for user ${user} not found!`);
       return await Score.updateScore(score._id, { value: score.value + 1 });
+    }
+  }
+
+  // Dashboard
+  @Router.get("/dashboard")
+  async getDashboard(session: WebSessionDoc) {
+    const user = WebSession.getUser(session);
+    const userInfo = await User.getUserById(user);
+    const scores = await Score.getScores({ user });
+    // will remove if statement after we refresh the database
+    if (scores.length === 0) {
+      return { user: userInfo };
+    } else {
+      return { user: userInfo, scores: scores };
     }
   }
 }
