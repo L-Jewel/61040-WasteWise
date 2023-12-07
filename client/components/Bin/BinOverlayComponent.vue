@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import ReportBinStatusComponent from "@/components/Map/ReportBinStatusComponent.vue";
 import { useUserStore } from "@/stores/user";
 import { storeToRefs } from "pinia";
 import { onBeforeMount, ref } from "vue";
@@ -20,6 +21,8 @@ const binTypeToString = {
   3: "Donation",
 };
 const IMAGE_WIDTH = "30%";
+
+const binStatusDialogVisible = ref(false);
 
 const redirectToMaterialPage = (materialName: string) => {
   void router.push({ path: `/material/${materialName}` });
@@ -76,6 +79,7 @@ onBeforeMount(async () => {
         <h2>help omg</h2>
         <v-btn @click="clearOverlay" variant="text" density="compact" icon="mdi-close" />
       </div>
+      <v-progress-linear v-if="!loaded" indeterminate />
       <div class="bin-info">
         <p v-if="binInfo && binInfo.status">
           <i>Reported as {{ binInfo.status === "NotFull" ? "not full" : "full" }} at {{ new Date(binInfo.lastStatusUpdate).getHours() }}:{{ new Date(binInfo.lastStatusUpdate).getMinutes() }}</i>
@@ -112,14 +116,15 @@ onBeforeMount(async () => {
             />
           </div>
         </div>
-        <div class="bin-btn-col">
+        <div v-if="isLoggedIn" class="bin-btn-col">
           <v-btn variant="tonal" block>Log Recycle</v-btn>
-          <v-btn variant="tonal" block>Report Bin Capacity</v-btn>
+          <v-btn variant="tonal" @click="binStatusDialogVisible = true" block>Report Bin Capacity</v-btn>
         </div>
       </div>
-      <v-progress-linear v-if="!loaded" indeterminate />
     </v-card>
   </article>
+
+  <ReportBinStatusComponent :dialog-visible="binStatusDialogVisible" :bin-id="props.bin" @hide-dialog="binStatusDialogVisible = false" />
 </template>
 
 <style scoped>

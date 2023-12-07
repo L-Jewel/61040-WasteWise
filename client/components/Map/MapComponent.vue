@@ -2,7 +2,6 @@
 import BinOverlayComponent from "@/components/Bin/BinOverlayComponent.vue";
 import { fetchy } from "@/utils/fetchy";
 import { ref } from "vue";
-import ReportBinStatusComponent from "./ReportBinStatusComponent.vue";
 
 // reference page: https://javascript.plainenglish.io/building-interactive-mapping-applications-with-leaflet-js-and-vues-options-api-6f820b8d6286
 
@@ -24,8 +23,6 @@ const mapOptions = {
   maxBounds: L.latLngBounds(L.latLng(18.91619, -171.791110603), L.latLng(71.3577635769, -66.96466)),
   layers: [],
 };
-
-const binStatusDialogVisible = ref(false);
 
 async function initMap() {
   // initialize leaflet map
@@ -58,7 +55,6 @@ async function initMap() {
     for (const bin of bins!) {
       const marker = L.marker(bin.location, { icon: markerColors.get(key) }).addTo(leafletMap);
       marker.on("click", () => {
-        binStatusDialogVisible.value = true;
         selectedBin.value = bin.bin;
       });
     }
@@ -101,8 +97,6 @@ async function getBins() {
       <BinOverlayComponent v-if="loaded" :bin="selectedBin" :key="selectedBin" class="bin-overlay" />
     </div>
   </main>
-
-  <ReportBinStatusComponent :dialog-visible="binStatusDialogVisible" :bin-id="selectedBin" @hide-dialog="binStatusDialogVisible = false" />
 </template>
 
 <style scoped>
