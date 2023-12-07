@@ -100,7 +100,10 @@ onBeforeMount(async () => {
       <v-progress-linear v-if="!loaded" indeterminate />
       <div class="bin-info">
         <p v-if="binInfo && binInfo.status">
-          <i>Reported as {{ binInfo.status === "NotFull" ? "not full" : "full" }} at {{ new Date(binInfo.lastStatusUpdate).getHours() }}:{{ new Date(binInfo.lastStatusUpdate).getMinutes() }}</i>
+          <i
+            >Reported as {{ binInfo.status === "NotFull" ? "not full" : "full" }} at
+            {{ `${new Date(binInfo.lastStatusUpdate).getHours()}:${new Date(binInfo.lastStatusUpdate).getMinutes().toString().padStart(2, "0")}` }}</i
+          >
         </p>
         <p v-else><i>Status unknown</i></p>
         <div>
