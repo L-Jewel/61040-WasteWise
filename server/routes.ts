@@ -177,8 +177,16 @@ class Routes {
 
   // MAP
   @Router.get("/map")
-  async getBinsByLocation(longitude: string, latitude: string) {
-    return await Map.getBinsByLocation(longitude, latitude);
+  async getBinsByLocation(longitude: string, latitude: string, type?: string) {
+    const mapMarkers = await Map.getBinsByLocation(longitude, latitude);
+
+    if (type) {
+      const binsOfCorrectType = (await Bin.getBinsByQuery({ type: Object.keys(BinType).indexOf(type) })).map((bin) => bin._id.toString());
+
+      return mapMarkers.filter((marker) => binsOfCorrectType.includes(marker.bin.toString()));
+    } else {
+      return mapMarkers;
+    }
   }
   @Router.get("/map/:_id")
   async getBinLocation(_id: string) {
@@ -186,8 +194,8 @@ class Routes {
   }
   @Router.patch("/map")
   async updateBinLocation(session: WebSessionDoc, _id: string, location: [number, number]) {
-    // const user = WebSession.getUser(session);
-    // await AccessList.verifyAccess(user, AccessLevel.Organization);
+    const user = WebSession.getUser(session);
+    await AccessList.verifyAccess(user, AccessLevel.Organization);
 
     return await Map.updateBinLocation(_id, location);
   }

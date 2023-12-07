@@ -8,6 +8,9 @@ const IMAGE_WIDTH = "100%";
 const redirectToMaterialPage = () => {
   void router.push({ path: `/material/${materialInfo.value.name}` });
 };
+const redirectToMapPage = () => {
+  void router.push({ path: `/map` });
+};
 </script>
 
 <template>
@@ -17,7 +20,7 @@ const redirectToMaterialPage = () => {
         <strong>{{ materialInfo.name }}</strong>
       </p>
     </RouterLink>
-    <v-btn variant="text" append-icon="mdi-chevron-right" density="compact">See Disposal Locations</v-btn>
+    <v-btn @click="redirectToMapPage" variant="text" append-icon="mdi-chevron-right" density="compact">See Disposal Locations</v-btn>
     <v-img @click="redirectToMaterialPage" v-bind:width="IMAGE_WIDTH" v-bind:src="material.image" :aspect-ratio="16 / 9" cover />
   </article>
 </template>
