@@ -19,10 +19,12 @@ const { currentUsername } = storeToRefs(useUserStore());
 <style scoped>
 h1 {
   margin: 0;
+  font-size: 2.5em;
 }
 
 .nickname {
   font-size: 150%;
+  margin-bottom: 1rem;
 }
 
 .chips {

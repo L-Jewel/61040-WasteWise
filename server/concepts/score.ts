@@ -55,6 +55,7 @@ export default class ScoreConcept {
     if (!score) throw new NotFoundError("Score does not exist!");
 
     if (update.name) await this.isNameUniqueForUser(update.name, score.user);
+    await this.scores.updateOne({ _id }, update);
     return { msg: "Score successfully updated!", score: await this.scores.readOne({ _id }) };
   }
 

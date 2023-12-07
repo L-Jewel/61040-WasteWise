@@ -34,6 +34,14 @@ async function getMaterial(name: string) {
   material.value = materialResult;
 }
 
+async function logDisposal(materialName: string) {
+  try {
+    await fetchy(`/api/dispose/${materialName}`, "PATCH");
+  } catch (_) {
+    return;
+  }
+}
+
 onBeforeMount(async () => {
   await getMaterial(props.materialName);
   loaded.value = true;
@@ -65,7 +73,7 @@ onBeforeMount(async () => {
 
     <!-- Log Recycle button -->
     <article class="log-recycle-btn" v-if="isLoggedIn && (material.type == 'Recyclable' || material.type == 'Compostable')">
-      <v-btn variant="tonal">Log Recycle</v-btn>
+      <v-btn variant="tonal" @click="logDisposal(material.name)">Log Recycle</v-btn>
     </article>
   </section>
   <!-- Material Not Found -->
