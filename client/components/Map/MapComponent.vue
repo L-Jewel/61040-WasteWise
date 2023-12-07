@@ -8,6 +8,7 @@ import ReportBinStatusComponent from "./ReportBinStatusComponent.vue";
 
 import * as L from "leaflet"; // made components/leaflet.d.ts file to make this import work
 import "leaflet/dist/leaflet.css";
+import { onMounted } from "vue";
 
 const loaded = ref(false);
 const mapId = "leaflet-map";
@@ -49,18 +50,14 @@ async function initMap() {
   mapInstance.value = leafletMap;
 }
 
-async function refreshPage() {
-  window.location.reload();
-}
-
-async function generateMap() {
+onMounted(async () => {
   console.log("Fetching Bin Locations... ");
   await getBins();
   console.log("Initializing Leaflet Map... ");
   await initMap();
   console.log("Done!");
   loaded.value = true;
-}
+});
 
 async function getBins() {
   let bins;
@@ -78,14 +75,9 @@ async function getBins() {
 
 <template>
   <main>
-    <div v-if="!loaded">
-      <v-btn type="submit" variant="tonal" size="x-large" @click="generateMap">Generate Map</v-btn>
-    </div>
-    <div v-else>
-      <v-btn type="submit" variant="tonal" size="x-large" @click="refreshPage">Refresh Page</v-btn>
-    </div>
+    <v-progress-linear v-if="!loaded" indeterminate style="width: 90%" />
     <div class="map-component">
-      <div :id="mapId" style="height: 90vh; width: 90%"></div>
+      <div :id="mapId" style="height: 80vh; width: 90%"></div>
       <BinOverlayComponent v-if="loaded" :bin="selectedBin" :key="selectedBin" class="bin-overlay" />
     </div>
   </main>
