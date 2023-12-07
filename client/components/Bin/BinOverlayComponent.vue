@@ -7,22 +7,32 @@ import router from "../../router";
 import { fetchy } from "../../utils/fetchy";
 
 const props = defineProps(["bin"]);
-const binInfo = ref<Record<string, string>>();
+const binInfo = ref();
 const acceptedMaterials = ref<Array<Record<string, string>>>([]);
 const misdisposedMaterials = ref<Array<Record<string, string>>>([]);
 const isVisible = ref(false);
 const loaded = ref(false);
 const userStore = useUserStore();
 const { isLoggedIn } = storeToRefs(userStore);
-const binTypeToString = {
-  0: "Compost",
-  1: "Recycling",
-  2: "Trash",
-  3: "Donation",
-};
 const IMAGE_WIDTH = "30%";
 
 const binStatusDialogVisible = ref(false);
+
+const binTypeToString = () => {
+  if (!binInfo.value) return;
+  const binType = binInfo.value.type;
+  if (binType === 0) {
+    return "Compost";
+  } else if (binType === 1) {
+    return "Recycling";
+  } else if (binType === 2) {
+    return "Trash";
+  } else if (binType === 3) {
+    return "Donation";
+  } else {
+    return "Unknown";
+  }
+};
 
 const redirectToMaterialPage = (materialName: string) => {
   void router.push({ path: `/material/${materialName}` });
@@ -76,7 +86,7 @@ onBeforeMount(async () => {
   <article v-if="isVisible">
     <v-card>
       <div class="bin-title">
-        <h2>help omg</h2>
+        <h2>{{ binTypeToString() }} Bin</h2>
         <v-btn @click="clearOverlay" variant="text" density="compact" icon="mdi-close" />
       </div>
       <v-progress-linear v-if="!loaded" indeterminate />
