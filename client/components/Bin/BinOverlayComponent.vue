@@ -4,6 +4,7 @@ import { storeToRefs } from "pinia";
 import { onBeforeMount, ref } from "vue";
 import router from "../../router";
 import { fetchy } from "../../utils/fetchy";
+import ReportBinStatusComponent from "@/components/Map/ReportBinStatusComponent.vue"
 
 const props = defineProps(["bin"]);
 const binInfo = ref<Record<string, string>>();
@@ -20,6 +21,8 @@ const binTypeToString = {
   3: "Donation",
 };
 const IMAGE_WIDTH = "30%";
+
+const binStatusDialogVisible = ref(false);
 
 const redirectToMaterialPage = (materialName: string) => {
   void router.push({ path: `/material/${materialName}` });
@@ -115,11 +118,16 @@ onBeforeMount(async () => {
       </div>
       <div class="bin-btn-row" v-if="isLoggedIn">
         <v-btn>Log Recycle</v-btn>
-        <v-btn>Report Bin Capacity</v-btn>
+        <v-btn @click="binStatusDialogVisible=true">Report Bin Capacity</v-btn>
       </div>
       <v-progress-linear v-if="!loaded" indeterminate />
     </v-card>
   </article>
+
+  <template>
+    <ReportBinStatusComponent :dialog-visible="binStatusDialogVisible" :bin-id="props.bin" @hide-dialog="binStatusDialogVisible = false" />
+  </template>
+
 </template>
 
 <style scoped>
