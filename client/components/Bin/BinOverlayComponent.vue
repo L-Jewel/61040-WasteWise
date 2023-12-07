@@ -2,9 +2,9 @@
 import { useUserStore } from "@/stores/user";
 import { storeToRefs } from "pinia";
 import { onBeforeMount, ref } from "vue";
+import { onBeforeMount, ref } from "vue";
 import router from "../../router";
 import { fetchy } from "../../utils/fetchy";
-import ReportBinStatusComponent from "@/components/Map/ReportBinStatusComponent.vue"
 
 const props = defineProps(["bin"]);
 const binInfo = ref<Record<string, string>>();
@@ -79,6 +79,7 @@ onBeforeMount(async () => {
         <h2>help omg</h2>
         <v-btn @click="clearOverlay" variant="text" density="compact" icon="mdi-close" />
       </div>
+      <v-progress-linear v-if="!loaded" indeterminate />
       <div class="bin-info">
         <p v-if="binInfo && binInfo.status">
           <i>Reported as {{ binInfo.status === "NotFull" ? "not full" : "full" }} at {{ new Date(binInfo.lastStatusUpdate).getHours() }}:{{ new Date(binInfo.lastStatusUpdate).getMinutes() }}</i>
@@ -115,12 +116,11 @@ onBeforeMount(async () => {
             />
           </div>
         </div>
+        <div v-if="isLoggedIn" class="bin-btn-col">
+          <v-btn variant="tonal" block>Log Recycle</v-btn>
+          <v-btn variant="tonal" @click="binStatusDialogVisible = true" block>Report Bin Capacity</v-btn>
+        </div>
       </div>
-      <div class="bin-btn-row" v-if="isLoggedIn">
-        <v-btn>Log Recycle</v-btn>
-        <v-btn @click="binStatusDialogVisible=true">Report Bin Capacity</v-btn>
-      </div>
-      <v-progress-linear v-if="!loaded" indeterminate />
     </v-card>
     <ReportBinStatusComponent :dialog-visible="binStatusDialogVisible" :bin-id="props.bin" @hide-dialog="binStatusDialogVisible = false" />
   </article>
@@ -163,7 +163,9 @@ onBeforeMount(async () => {
   max-width: 30%;
 }
 
-.bin-btn-row {
+.bin-btn-col {
   display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
 }
 </style>
