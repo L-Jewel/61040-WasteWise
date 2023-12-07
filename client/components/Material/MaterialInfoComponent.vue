@@ -3,6 +3,7 @@ import { useUserStore } from "@/stores/user";
 import { fetchy } from "@/utils/fetchy";
 import { storeToRefs } from "pinia";
 import { computed, onBeforeMount, ref } from "vue";
+import router from "../../router";
 
 const { isLoggedIn } = storeToRefs(useUserStore());
 const props = defineProps(["materialName"]);
@@ -42,6 +43,10 @@ async function logDisposal(materialName: string) {
   }
 }
 
+const redirectToMapPage = () => {
+  void router.push({ path: `/map` });
+};
+
 onBeforeMount(async () => {
   await getMaterial(props.materialName);
   loaded.value = true;
@@ -60,7 +65,7 @@ onBeforeMount(async () => {
             <strong>{{ material.type ?? "Unknown" }}</strong>
           </p>
         </div>
-        <v-btn variant="text" append-icon="mdi-chevron-right" density="compact">See Disposal Locations</v-btn>
+        <v-btn @click="redirectToMapPage" variant="text" append-icon="mdi-chevron-right" density="compact">See Disposal Locations</v-btn>
         <p>
           <i>{{ material.description }}</i>
         </p>

@@ -107,7 +107,7 @@ class Routes {
   }
   @Router.get("/materials/:name")
   async getMaterial(name: string) {
-    return Material.getMaterialByName(name);
+    return Material.getMaterial(name);
   }
   // Search Materials
   @Router.get("/search/material/:input")
@@ -177,8 +177,16 @@ class Routes {
 
   // MAP
   @Router.get("/map")
-  async getBinsByLocation(longitude: string, latitude: string) {
-    return await Map.getBinsByLocation(longitude, latitude);
+  async getBinsByLocation(longitude: string, latitude: string, type?: string) {
+    const mapMarkers = await Map.getBinsByLocation(longitude, latitude);
+
+    if (type) {
+      const binsOfCorrectType = (await Bin.getBinsByQuery({ type: Object.keys(BinType).indexOf(type) })).map((bin) => bin._id.toString());
+
+      return mapMarkers.filter((marker) => binsOfCorrectType.includes(marker.bin.toString()));
+    } else {
+      return mapMarkers;
+    }
   }
   @Router.get("/map/:_id")
   async getBinLocation(_id: string) {
@@ -186,8 +194,8 @@ class Routes {
   }
   @Router.patch("/map")
   async updateBinLocation(session: WebSessionDoc, _id: string, location: [number, number]) {
-    // const user = WebSession.getUser(session);
-    // await AccessList.verifyAccess(user, AccessLevel.Organization);
+    const user = WebSession.getUser(session);
+    await AccessList.verifyAccess(user, AccessLevel.Organization);
 
     return await Map.updateBinLocation(_id, location);
   }
@@ -205,7 +213,7 @@ class Routes {
   @Router.patch("/dispose/:materialName")
   async dispose(session: WebSessionDoc, materialName: string) {
     const user = WebSession.getUser(session);
-    const material = await Material.getMaterialByName(materialName);
+    const material = await Material.getMaterial(materialName);
     const scoreName = getScoreNameForMaterialType(material.type.toString());
     // can prob make scores have a "bin" or "waste" enum instead of name
     const score = await Score.getScoreForUser(user, scoreName);

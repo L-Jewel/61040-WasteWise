@@ -8,10 +8,11 @@ import ReportBinStatusComponent from "./ReportBinStatusComponent.vue";
 
 import * as L from "leaflet"; // made components/leaflet.d.ts file to make this import work
 import "leaflet/dist/leaflet.css";
+import { onMounted } from "vue";
 
 const loaded = ref(false);
 const mapId = "leaflet-map";
-const binData = ref(null);
+const binData = ref(new Map<number, Array<any>>());
 const selectedBin = ref("");
 const mapInstance = ref(null);
 const layerControlInstance = ref(null);
@@ -27,6 +28,7 @@ const mapOptions = {
 const binStatusDialogVisible = ref(false);
 
 async function initMap() {
+  // initialize leaflet map
   const leafletMap = L.map(mapId, mapOptions);
   const tile = L.tileLayer(`https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png`, {
     attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
@@ -36,9 +38,25 @@ async function initMap() {
     console.log("ZOOM STARTED");
   });
 
-  if (binData.value) {
-    for (const bin of binData.value as any) {
-      const marker = L.marker(bin.location).addTo(leafletMap);
+  // create icons with different colors
+  const markerColors = new Map([]);
+  for (const [i, color] of ["green", "blue", "black", "orange"].entries()) {
+    const colorIcon = new L.Icon({
+      iconUrl: "https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-" + color + ".png",
+      shadowUrl: "https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png",
+      iconSize: [25, 41],
+      iconAnchor: [12, 41],
+      popupAnchor: [1, -34],
+      shadowSize: [41, 41],
+    });
+    markerColors.set(i, colorIcon);
+  }
+
+  // populate map with bins using corresponding colors
+  for (const key of binData.value.keys()) {
+    const bins = binData.value.get(key);
+    for (const bin of bins!) {
+      const marker = L.marker(bin.location, { icon: markerColors.get(key) }).addTo(leafletMap);
       marker.on("click", () => {
         binStatusDialogVisible.value = true;
         selectedBin.value = bin.bin;
@@ -49,43 +67,37 @@ async function initMap() {
   mapInstance.value = leafletMap;
 }
 
-async function refreshPage() {
-  window.location.reload();
-}
-
-async function generateMap() {
+onMounted(async () => {
   console.log("Fetching Bin Locations... ");
   await getBins();
   console.log("Initializing Leaflet Map... ");
   await initMap();
   console.log("Done!");
   loaded.value = true;
-}
+});
 
 async function getBins() {
-  let bins;
-  try {
-    bins = await fetchy(`/api/map`, "GET", { query: { longitude: "42.360001", latitude: "-71.092003" } }); // hardcoded location for now
-  } catch (_) {
-    console.log("failed to fetch bins");
-    console.log(_);
-    return;
+  // 4 bin types, hardcoded for now
+  for (let i = 0; i < 4; i++) {
+    let bins;
+    try {
+      bins = await fetchy(`/api/map`, "GET", { query: { longitude: "42.360001", latitude: "-71.092003", type: i.toString() } }); // hardcoded location for now
+    } catch (_) {
+      console.log("failed to fetch bins");
+      console.log(_);
+      return;
+    }
+    console.log(bins);
+    binData.value.set(i, bins);
   }
-  binData.value = bins;
-  console.log(bins);
 }
 </script>
 
 <template>
   <main>
-    <div v-if="!loaded">
-      <v-btn type="submit" variant="tonal" size="x-large" @click="generateMap">Generate Map</v-btn>
-    </div>
-    <div v-else>
-      <v-btn type="submit" variant="tonal" size="x-large" @click="refreshPage">Refresh Page</v-btn>
-    </div>
+    <v-progress-linear v-if="!loaded" indeterminate style="width: 90%" />
     <div class="map-component">
-      <div :id="mapId" style="height: 90vh; width: 90%"></div>
+      <div :id="mapId" style="height: 80vh; width: 90%"></div>
       <BinOverlayComponent v-if="loaded" :bin="selectedBin" :key="selectedBin" class="bin-overlay" />
     </div>
   </main>
