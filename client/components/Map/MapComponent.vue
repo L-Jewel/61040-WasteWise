@@ -12,7 +12,7 @@ import { onMounted } from "vue";
 
 const loaded = ref(false);
 const mapId = "leaflet-map";
-const binData = ref(null);
+const binData = ref(new Map<number, Array<any>>());
 const selectedBin = ref("");
 const mapInstance = ref(null);
 const layerControlInstance = ref(null);
@@ -37,9 +37,16 @@ async function initMap() {
     console.log("ZOOM STARTED");
   });
 
-  if (binData.value) {
-    for (const bin of binData.value as any) {
-      const marker = L.marker(bin.location).addTo(leafletMap);
+  const markerColors = new Map([
+    [0, "green"],
+    [1, "blue"],
+    [2, "black"],
+    [3, "orange"],
+  ]);
+  for (const key of binData.value.keys()) {
+    const bins = binData.value.get(key);
+    for (const bin of bins!) {
+      const marker = L.marker(bin.location, { markerColor: markerColors.get(key) }).addTo(leafletMap);
       marker.on("click", () => {
         binStatusDialogVisible.value = true;
         selectedBin.value = bin.bin;
@@ -60,16 +67,19 @@ onMounted(async () => {
 });
 
 async function getBins() {
-  let bins;
-  try {
-    bins = await fetchy(`/api/map`, "GET", { query: { longitude: "42.360001", latitude: "-71.092003" } }); // hardcoded location for now
-  } catch (_) {
-    console.log("failed to fetch bins");
-    console.log(_);
-    return;
+  // 4 bin types, hardcoded for now
+  for (let i = 0; i < 4; i++) {
+    let bins;
+    try {
+      bins = await fetchy(`/api/map`, "GET", { query: { longitude: "42.360001", latitude: "-71.092003" } }); // hardcoded location for now
+    } catch (_) {
+      console.log("failed to fetch bins");
+      console.log(_);
+      return;
+    }
+    console.log(bins);
+    binData.value.set(i, bins);
   }
-  binData.value = bins;
-  console.log(bins);
 }
 </script>
 
