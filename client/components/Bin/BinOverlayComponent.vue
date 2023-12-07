@@ -2,9 +2,9 @@
 import { useUserStore } from "@/stores/user";
 import { storeToRefs } from "pinia";
 import { onBeforeMount, ref } from "vue";
-import { onBeforeMount, ref } from "vue";
 import router from "../../router";
 import { fetchy } from "../../utils/fetchy";
+import ReportBinStatusComponent from "@/components/Map/ReportBinStatusComponent.vue"
 
 const props = defineProps(["bin"]);
 const binInfo = ref<Record<string, string>>();
