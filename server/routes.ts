@@ -107,7 +107,7 @@ class Routes {
   }
   @Router.get("/materials/:name")
   async getMaterial(name: string) {
-    return Material.getMaterialByName(name);
+    return Material.getMaterial(name);
   }
   // Search Materials
   @Router.get("/search/material/:input")
@@ -205,7 +205,7 @@ class Routes {
   @Router.patch("/dispose/material/:bin")
   async dispose(session: WebSessionDoc, materialName: string, bin_id: string) {
     const user = WebSession.getUser(session);
-    const material = await Material.getMaterialByName(materialName);
+    const material = await Material.getMaterial(materialName);
     const binList = await Bin.getBinsByQuery({ _id: new ObjectId(bin_id) });
     if (!material) throw new NotFoundError(`Material ${materialName} does not exist!`);
     if (binList.length === 0) throw new NotFoundError(`Bin ${bin_id} does not exist!`);

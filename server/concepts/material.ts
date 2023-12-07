@@ -19,8 +19,13 @@ export default class MaterialConcept {
     return results;
   }
 
-  async getMaterialByName(name: string) {
-    const material = await this.materials.readOne({ name });
+  // Attempts to get a material first by name and then by ID.
+  async getMaterial(name: string) {
+    let material = await this.materials.readOne({ name });
+    if (material) {
+      return material;
+    }
+    material = await this.materials.readOne({ _id: new ObjectId(name) });
     if (material) {
       return material;
     }
