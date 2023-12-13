@@ -118,6 +118,7 @@ onBeforeMount(async () => {
                 :src="ba.image"
                 :aspect-ratio="1 / 1"
                 v-bind:key="ba._id"
+                style="cursor: pointer;"
               />
               <p> {{ ba.name }}</p>
             </div>
@@ -136,6 +137,7 @@ onBeforeMount(async () => {
                 :src="ba.image"
                 :aspect-ratio="1 / 1"
                 v-bind:key="ba._id"
+                style="cursor: pointer;"
               />
               <p>{{ ba.name }}</p>
             </div>
