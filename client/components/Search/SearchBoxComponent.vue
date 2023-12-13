@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { ref } from "vue";
 import router from "@/router";
+import { ref } from "vue";
 
 const searchQuery = ref("");
 
@@ -18,6 +18,7 @@ async function searchMaterials() {
       </fieldset>
     </form>
     <p>?</p>
+    <p id="subtext">Ex. banana peel, coffee ground, plastic 1, plastic 2, pants</p>
   </article>
 </template>
 
@@ -29,11 +30,17 @@ article {
   width: 100%;
   display: flex;
   align-items: center;
+  flex-wrap: wrap;
   gap: 1rem;
 }
 
 p {
   font-size: 3.5rem;
+}
+
+#subtext {
+  font-size: 1rem;
+  width: 100%;
 }
 
 form {
