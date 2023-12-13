@@ -1,10 +1,10 @@
 <script setup lang="ts">
+import ReportBinStatusComponent from "@/components/Map/ReportBinStatusComponent.vue";
 import { useUserStore } from "@/stores/user";
 import { storeToRefs } from "pinia";
 import { onBeforeMount, ref } from "vue";
 import router from "../../router";
 import { fetchy } from "../../utils/fetchy";
-import ReportBinStatusComponent from "@/components/Map/ReportBinStatusComponent.vue"
 
 const props = defineProps(["bin"]);
 const binInfo = ref();
@@ -71,6 +71,14 @@ async function getBinInfo() {
   loaded.value = true;
 }
 
+async function logDisposal(binType: number) {
+  try {
+    await fetchy(`/api/dispose/bin/${binType}`, "PATCH");
+  } catch (_) {
+    return;
+  }
+}
+
 // When the user hits the "X" icon, the overlay closes.
 function clearOverlay() {
   isVisible.value = false;
@@ -92,7 +100,10 @@ onBeforeMount(async () => {
       <v-progress-linear v-if="!loaded" indeterminate />
       <div class="bin-info">
         <p v-if="binInfo && binInfo.status">
-          <i>Reported as {{ binInfo.status === "NotFull" ? "not full" : "full" }} at {{ new Date(binInfo.lastStatusUpdate).getHours() }}:{{ new Date(binInfo.lastStatusUpdate).getMinutes() }}</i>
+          <i
+            >Reported as {{ binInfo.status === "NotFull" ? "not full" : "full" }} at
+            {{ `${new Date(binInfo.lastStatusUpdate).getHours()}:${new Date(binInfo.lastStatusUpdate).getMinutes().toString().padStart(2, "0")}` }}</i
+          >
         </p>
         <p v-else><i>Status unknown</i></p>
         <div>
@@ -127,7 +138,7 @@ onBeforeMount(async () => {
           </div>
         </div>
         <div v-if="isLoggedIn" class="bin-btn-col">
-          <v-btn variant="tonal" block>Log Recycle</v-btn>
+          <v-btn variant="tonal" @click="logDisposal(binInfo.type)" block>Log Recycle</v-btn>
           <v-btn variant="tonal" @click="binStatusDialogVisible = true" block>Report Bin Capacity</v-btn>
         </div>
       </div>

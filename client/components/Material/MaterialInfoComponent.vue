@@ -37,14 +37,14 @@ async function getMaterial(name: string) {
 
 async function logDisposal(materialName: string) {
   try {
-    await fetchy(`/api/dispose/${materialName}`, "PATCH");
+    await fetchy(`/api/dispose/material/${materialName}`, "PATCH");
   } catch (_) {
     return;
   }
 }
 
 const redirectToMapPage = () => {
-  void router.push({ path: `/map` });
+  void router.push({ path: `/map/${material.value!.type}` });
 };
 
 onBeforeMount(async () => {

@@ -1,24 +1,22 @@
 <script setup lang="ts">
-import PersonalInfo from "@/components/Profile/PersonalInfoComponent.vue";
 import ScoreCard from "@/components/Score/ScoreCardComponent.vue";
 import { useUserStore } from "@/stores/user";
 import { storeToRefs } from "pinia";
 
-const { isLoggedIn } = storeToRefs(useUserStore());
+const { isLoggedIn, currentUsername } = storeToRefs(useUserStore());
 </script>
 
 <template>
   <main>
     <h1>Dashboard</h1>
     <section class="full-width">
-      <!-- <h1 v-if="isLoggedIn">Welcome {{ currentUsername }}!</h1> -->
-      <div v-if="isLoggedIn" class="dashboard-components">
-        <PersonalInfo class="half-width" />
-        <section class="scores half-width">
-          <ScoreCard score-name="Recycle" type-of-disposal="recycled" />
-          <ScoreCard score-name="Compost" type-of-disposal="composted" />
-        </section>
-      </div>
+      <h1 v-if="isLoggedIn" class="user">{{ currentUsername }}</h1>
+      <h2 v-if="isLoggedIn">WasteWizard</h2>
+      <section v-if="isLoggedIn" class="scores">
+        <!-- props need to be exactly the right string to function properly -->
+        <ScoreCard disposal-type="Recycle" />
+        <ScoreCard disposal-type="Compost" />
+      </section>
       <h1 v-else>Please login!</h1>
     </section>
   </main>
@@ -36,22 +34,23 @@ h1 {
   text-align: center;
 }
 
+h2 {
+  text-align: center;
+}
+
+.user {
+  margin: 0;
+}
+
 .full-width {
   width: 100%;
-}
-
-.half-width {
-  width: 50%;
-}
-
-.dashboard-components {
-  display: flex;
-  gap: 2em;
 }
 
 .scores {
   display: flex;
   flex-direction: column;
+  align-items: center;
   gap: 2em;
+  margin: 1em;
 }
 </style>

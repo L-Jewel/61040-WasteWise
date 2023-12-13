@@ -55,7 +55,7 @@ const router = createRouter({
       props: true,
     },
     {
-      path: "/map/",
+      path: "/map/:input(.*)",
       name: "Map",
       component: MapView,
       props: true,

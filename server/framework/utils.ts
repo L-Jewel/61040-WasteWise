@@ -22,3 +22,20 @@ export function getScoreNameForMaterialType(materialType: string) {
   }
   throw new Error("Material type not found!");
 }
+
+export function getScoreNameForBinType(binType: string) {
+  switch (binType) {
+    case "0":
+      return "Compost";
+
+    case "1":
+      return "Recycle";
+
+    case "2":
+      return "Trash";
+
+    case "3":
+      return "Donation";
+  }
+  throw new Error("Bin type not found!");
+}

@@ -9,7 +9,7 @@ const redirectToMaterialPage = () => {
   void router.push({ path: `/material/${materialInfo.value.name}` });
 };
 const redirectToMapPage = () => {
-  void router.push({ path: `/map` });
+  void router.push({ path: `/map/${materialInfo.value.type}` });
 };
 </script>
 
