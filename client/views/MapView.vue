@@ -1,10 +1,12 @@
 <script setup lang="ts">
 import MapComponent from "@/components/Map/MapComponent.vue";
+
+const props = defineProps(["input"]);
 </script>
 
 <template>
   <main>
-    <MapComponent />
+    <MapComponent :materialType="props.input" />
     <section>
       <article>
         <v-icon style="color: green" icon="mdi-map-marker" />

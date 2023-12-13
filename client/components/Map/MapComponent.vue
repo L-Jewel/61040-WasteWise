@@ -9,6 +9,9 @@ import * as L from "leaflet"; // made components/leaflet.d.ts file to make this 
 import "leaflet/dist/leaflet.css";
 import { onMounted } from "vue";
 
+const props = defineProps(["materialType"]);
+const binFilter = ref("");
+
 const loaded = ref(false);
 const mapId = "leaflet-map";
 const binData = ref(new Map<number, Array<any>>());
@@ -64,6 +67,10 @@ async function initMap() {
 }
 
 onMounted(async () => {
+  if (props.materialType) {
+    binFilter.value = props.materialType;
+  }
+  console.log(binFilter.value);
   console.log("Fetching Bin Locations... ");
   await getBins();
   console.log("Initializing Leaflet Map... ");
@@ -73,6 +80,8 @@ onMounted(async () => {
 });
 
 async function getBins() {
+  const mapper = ["Compostable", "Recyclable", "Solid Waste", "Donatable"]; // represents order: compost, recycle, trash, donation (material types -> bin types)
+
   // 4 bin types, hardcoded for now
   for (let i = 0; i < 4; i++) {
     let bins;
@@ -84,7 +93,11 @@ async function getBins() {
       return;
     }
     console.log(bins);
-    binData.value.set(i, bins);
+    if (!binFilter.value) {
+      binData.value.set(i, bins);
+    } else if (binFilter.value == mapper[i]) {
+      binData.value.set(i, bins);
+    }
   }
 }
 </script>

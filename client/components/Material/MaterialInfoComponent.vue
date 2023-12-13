@@ -44,7 +44,7 @@ async function logDisposal(materialName: string) {
 }
 
 const redirectToMapPage = () => {
-  void router.push({ path: `/map` });
+  void router.push({ path: `/map/${material.value!.type}` });
 };
 
 onBeforeMount(async () => {
