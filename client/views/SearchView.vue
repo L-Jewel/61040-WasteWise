@@ -43,8 +43,10 @@ onBeforeMount(async () => {
   <main>
     <form @submit.prevent="searchByMaterial">
       <fieldset>
+        <p class="instruction">Where can I put a</p>
         <v-text-field hide-details v-model="searchQuery" variant="outlined" prepend-inner-icon="mdi-magnify" />
         <v-btn type="submit" variant="tonal" size="x-large" :loading="isLoadingSearch">Search</v-btn>
+        <p class="instruction">?</p>
       </fieldset>
     </form>
     <MaterialCardSection :materialList="searchResults" :key="searchResults.length" />
@@ -67,5 +69,8 @@ form > fieldset {
   gap: 1rem;
   padding: 0;
   border: 0;
+}
+.instruction {
+  font-size: 2rem;
 }
 </style>
