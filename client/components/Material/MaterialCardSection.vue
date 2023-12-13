@@ -9,7 +9,7 @@ const materialList = ref<Array<Record<string, string>>>(props.materialList);
 <template>
   <section>
     <article v-for="material in materialList" :key="material._id">
-      <MaterialCard :material="material" />
+      <MaterialCard style="cursor: pointer;" :material="material" />
     </article>
   </section>
 </template>

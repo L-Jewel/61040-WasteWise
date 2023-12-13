@@ -20,6 +20,7 @@ const redirectToMapPage = () => {
         <strong>{{ materialInfo.name }}</strong>
       </p>
     </RouterLink>
+    <v-btn @click="redirectToMaterialPage" variant="text" append-icon="mdi-chevron-right" density="compact">Learn More</v-btn>
     <v-btn @click="redirectToMapPage" variant="text" append-icon="mdi-chevron-right" density="compact">See Disposal Locations</v-btn>
     <v-img @click="redirectToMaterialPage" v-bind:width="IMAGE_WIDTH" v-bind:src="material.image" :aspect-ratio="16 / 9" cover />
   </article>
@@ -33,7 +34,7 @@ article {
   border-radius: 4px;
   border: 1px solid black;
   padding: 0.5rem;
-  max-height: 220px;
+  max-height: 240px;
   max-width: 290px;
 }
 
